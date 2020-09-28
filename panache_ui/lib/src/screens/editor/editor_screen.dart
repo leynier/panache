@@ -9,9 +9,10 @@ import 'panels/editor_topbar_web.dart';
 import 'theme_editor.dart';
 
 class PanacheEditorScreen extends StatefulWidget {
+  const PanacheEditorScreen({Key key}) : super(key: key);
   @override
   PanacheEditorScreenState createState() {
-    return new PanacheEditorScreenState();
+    return PanacheEditorScreenState();
   }
 }
 

@@ -12,6 +12,18 @@ const Map<String, bool> defaultPanelStates = const {
   'primaryTextPanelExpanded': false,
   'accentTextPanelExpanded': false,
   'inputsPanelExpanded': false,
+  'appBarThemePanelExpanded': false,
+  'bottomAppBarThemePanelExpanded': false,
+  'bottomNavigationBarPanelExpanded': false,
+  'toggleButtonPanelExpanded': false,
+  'cardPanelExpanded': false,
+  'tooltipPanelExpanded': false,
+  'snackBarPanelExpanded': false,
+  'bottomSheetPanelExpanded': false,
+  'popupMenuPanelExpanded': false,
+  'timePickerPanelExpanded': false,
+  'buttonBarPanelExpanded': false,
+  'floatActionPanelExpanded': false,
 };
 
 abstract class LocalStorage {

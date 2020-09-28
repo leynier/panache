@@ -10,16 +10,18 @@ class MobilePanacheEditorTopbar extends StatelessWidget
   final bool showCode;
   final ValueChanged<bool> onShowCodeChanged;
 
-  MobilePanacheEditorTopbar(
+  const MobilePanacheEditorTopbar(
       {this.isMobileInPortrait,
       this.model,
       this.showCode,
-      this.onShowCodeChanged});
+      this.onShowCodeChanged,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final title = Text.rich(TextSpan(text: 'Panache', children: [
+    TextTheme textTheme = Theme.of(context).textTheme;
+    Text title = Text.rich(TextSpan(text: 'Panache', children: [
       TextSpan(
           text: ' alpha',
           style: textTheme.caption.copyWith(color: Colors.blueGrey.shade900))
@@ -29,7 +31,7 @@ class MobilePanacheEditorTopbar extends StatelessWidget
       return AppBar(
         title: title,
         leading: IconButton(
-            icon: Icon(Icons.color_lens),
+            icon: const Icon(Icons.color_lens),
             onPressed: () => Scaffold.of(context).openDrawer()),
         actions: [
           IconButton(
@@ -38,7 +40,7 @@ class MobilePanacheEditorTopbar extends StatelessWidget
           ),
           DriveMenu(model: model),
           IconButton(
-            icon: Icon(Icons.close),
+            icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).maybePop(),
           )
         ],
@@ -50,14 +52,14 @@ class MobilePanacheEditorTopbar extends StatelessWidget
       actions: <Widget>[
         FlatButton.icon(
           textColor: Colors.blueGrey.shade50,
-          icon: Icon(Icons.mobile_screen_share),
-          label: Text('App preview'),
+          icon: const Icon(Icons.mobile_screen_share),
+          label: const Text('App preview'),
           onPressed: showCode ? () => onShowCodeChanged(false) : null,
         ),
         FlatButton.icon(
           textColor: Colors.blueGrey.shade50,
-          icon: Icon(Icons.keyboard),
-          label: Text('Code preview'),
+          icon: const Icon(Icons.keyboard),
+          label: const Text('Code preview'),
           onPressed: showCode ? null : () => onShowCodeChanged(true),
         ),
         DriveMenu(model: model)

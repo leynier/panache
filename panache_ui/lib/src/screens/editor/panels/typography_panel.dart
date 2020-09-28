@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
 
@@ -5,14 +6,18 @@ import '../controls/text_style_control.dart';
 
 class TypographyThemePanel extends StatelessWidget {
   final TextTheme txtTheme;
-  final String themeRef;
+  final String txtThemeRef;
   final ThemeModel model;
+  final String modelParamRef;
+  final Function currentThemeCopyWith;
 
   const TypographyThemePanel({
-    Key key,
     @required this.txtTheme,
-    @required this.themeRef,
+    @required this.txtThemeRef,
     @required this.model,
+    Key key,
+    this.modelParamRef,
+    this.currentThemeCopyWith,
   }) : super(key: key);
 
   @override
@@ -25,41 +30,53 @@ class TypographyThemePanel extends StatelessWidget {
       );
 
   List<Widget> _buildTextThemeEditorFields(ThemeModel model) {
-    final headline = txtTheme.headline;
-    final title = txtTheme.title;
-    final subhead = txtTheme.subhead;
-    final subtitle = txtTheme.subtitle;
-    final body1 = txtTheme.body1;
-    final body2 = txtTheme.body2;
-    final caption = txtTheme.caption;
-    final overline = txtTheme.overline;
-    final button = txtTheme.button;
-    final display1 = txtTheme.display1;
-    final display2 = txtTheme.display2;
-    final display3 = txtTheme.display3;
-    final display4 = txtTheme.display4;
+    TextStyle subtitle1 = txtTheme.subtitle1;
+    TextStyle subtitle2 = txtTheme.subtitle2;
+    TextStyle bodyText2 = txtTheme.bodyText2;
+    TextStyle bodyText1 = txtTheme.bodyText1;
+    TextStyle caption = txtTheme.caption;
+    TextStyle overline = txtTheme.overline;
+    TextStyle button = txtTheme.button;
 
-    final styleNames = [
-      TextStyleControlData(styleName: 'headline', style: headline),
-      TextStyleControlData(styleName: 'title', style: title),
-      TextStyleControlData(styleName: 'subhead', style: subhead),
-      TextStyleControlData(styleName: 'subtitle', style: subtitle),
-      TextStyleControlData(styleName: 'body1', style: body1),
-      TextStyleControlData(styleName: 'body2', style: body2),
+    TextStyle headline6 = txtTheme.headline6;
+    TextStyle headline5 = txtTheme.headline5;
+    TextStyle headline4 = txtTheme.headline4;
+    TextStyle headline3 = txtTheme.headline3;
+    TextStyle headline2 = txtTheme.headline2;
+    TextStyle headline1 = txtTheme.headline1;
+
+    List<TextStyleControlData> styleNames = <TextStyleControlData>[
+      TextStyleControlData(styleName: 'headline1', style: headline1),
+      TextStyleControlData(styleName: 'headline2', style: headline2),
+      TextStyleControlData(styleName: 'headline3', style: headline3),
+      TextStyleControlData(styleName: 'headline4', style: headline4),
+      TextStyleControlData(styleName: 'headline5', style: headline5),
+      TextStyleControlData(styleName: 'headline6', style: headline6),
+      TextStyleControlData(styleName: 'subtitle1', style: subtitle1),
+      TextStyleControlData(styleName: 'subtitle2', style: subtitle2),
+      TextStyleControlData(styleName: 'bodyText1', style: bodyText1),
+      TextStyleControlData(styleName: 'bodyText2', style: bodyText2),
+      TextStyleControlData(styleName: 'button', style: button),
       TextStyleControlData(styleName: 'caption', style: caption),
       TextStyleControlData(styleName: 'overline', style: overline),
-      TextStyleControlData(styleName: 'button', style: button),
-      TextStyleControlData(styleName: 'display1', style: display1),
-      TextStyleControlData(styleName: 'display2', style: display2),
-      TextStyleControlData(styleName: 'display3', style: display3),
-      TextStyleControlData(styleName: 'display4', style: display4),
     ];
 
-    return styleNames.map((data) {
+    return styleNames.map((TextStyleControlData data) {
+      return buildTextStyleControl(txtThemeRef, model, txtTheme.copyWith,
+          key: null,
+          label: data.styleName,
+          textStyle: data.style,
+          styleName: data.styleName,
+          modelParamRef: modelParamRef,
+          currentThemeCopyWith: currentThemeCopyWith);
+    }).toList();
+
+    /*return styleNames.map((data) {
       return TextStyleControl(
         data.styleName,
         style: data.style,
-        onColorChanged: (color) =>
+        //key: null,
+        onColorChanged: (Color color) =>
             apply(data.style.copyWith(color: color), data.styleName),
         onSizeChanged: (size) {
           print(
@@ -90,16 +107,18 @@ class TypographyThemePanel extends StatelessWidget {
         onDecorationColorChanged: (Color color) =>
             apply(data.style.copyWith(decorationColor: color), data.styleName),
       );
-    }).toList();
+    }).toList();*/
   }
 
-  void apply(TextStyle style, String styleName) {
-    final styleArgs = <Symbol, dynamic>{};
-    styleArgs[Symbol(styleName)] = style;
-
-    final args = <Symbol, dynamic>{};
-    args[Symbol(themeRef)] = Function.apply(txtTheme.copyWith, null, styleArgs);
-    model.updateTheme(Function.apply(model.theme.copyWith, null, args));
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<TextTheme>('txtTheme', txtTheme));
+    properties.add(StringProperty('txtThemeRef', txtThemeRef));
+    properties.add(DiagnosticsProperty<ThemeModel>('model', model));
+    properties.add(DiagnosticsProperty('modelParamRef', modelParamRef));
+    properties.add(DiagnosticsProperty<Function>(
+        'currentThemeCopyWith', currentThemeCopyWith));
   }
 }
 

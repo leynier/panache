@@ -1,80 +1,116 @@
 import 'package:flutter/material.dart';
 
 class TypographyPreview extends StatelessWidget {
-  //final ThemeData theme;
+  final ThemeData theme;
 
-  final TextTheme textTheme;
-  final Brightness brightness;
+  //TextTheme  textTheme textTheme;
+  final TypographyPreviewModes typoPreviewMode;
 
   const TypographyPreview(
-      {Key key, @required this.textTheme, @required this.brightness})
+      {Key key, @required this.theme, @required this.typoPreviewMode})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: brightness == Brightness.dark
+    TextTheme textTheme;
+    Color bgColor;
+
+    switch (typoPreviewMode) {
+      case TypographyPreviewModes.accent:
+        {
+          textTheme = theme.accentTextTheme;
+          bgColor = theme.accentColor;
+          break;
+        }
+      case TypographyPreviewModes.primary:
+        {
+          textTheme = theme.primaryTextTheme;
+          bgColor = theme.primaryColor;
+          break;
+        }
+      case TypographyPreviewModes.classic:
+      default:
+        {
+          textTheme = theme.textTheme;
+          bgColor = theme.chipTheme.backgroundColor;
+          break;
+        }
+    }
+    return Card(
+      color:
+          /*brightness == Brightness.dark
           ? Colors.grey.shade700
-          : Colors.grey.shade100,
-      padding: EdgeInsets.all(8.0),
-      child: ListView(
-        children: [
-          Text(
-            'Headline\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.headline,
-          ),
-          Text(
-            'Subhead\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.subhead,
-          ),
-          Text(
-            'Title\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.title,
-          ),
-          Text(
-            'Subtitle\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.subtitle,
-          ),
-          Text(
-            'Caption\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.caption,
-          ),
-          Text(
-            'Overline\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.overline,
-          ),
-          Text(
-            'Body 1\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.body1,
-          ),
-          Text(
-            'Body 2\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\n',
-            style: textTheme.body2,
-          ),
-          FlatButton(
+          : Colors.grey.shade100*/
+          bgColor,
+      //padding: EdgeInsets.all(8),
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: ListView(
+          children: [
+            Text(
+              'Headline 1',
+              style: textTheme.headline1,
+            ),
+            Text(
+              'Headline 2',
+              style: textTheme.headline2,
+            ),
+            Text(
+              'Headline 3',
+              style: textTheme.headline3,
+            ),
+            Text(
+              'Headline 4',
+              style: textTheme.headline4,
+            ),
+            Text(
+              'Headline 5',
+              style: textTheme.headline5,
+            ),
+            Text(
+              'Headline 6',
+              style: textTheme.headline6,
+            ),
+            Text(
+              'Subtitle 1\nThe quick brown fox jumps over the lazy dog\n',
+              style: textTheme.subtitle1,
+            ),
+            Text(
+              'Subtitle 2\nThe quick brown fox jumps over the lazy dog\n',
+              style: textTheme.subtitle2,
+            ),
+            Text(
+              'Body Text 1\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\n',
+              style: textTheme.bodyText1,
+            ),
+            Text(
+              'Body Text 2\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\nThe quick brown fox jumps over the lazy dog\n',
+              style: textTheme.bodyText2,
+            ),
+            FlatButton(
               child: Text(
-                'button',
+                'Button',
                 style: textTheme.button,
               ),
-              onPressed: () {}),
-          Text(
-            'Display 1',
-            style: textTheme.display1,
-          ),
-          Text(
-            'Display 2',
-            style: textTheme.display2,
-          ),
-          Text(
-            'Display 3',
-            style: textTheme.display3,
-          ),
-          Text(
-            'Display 4',
-            style: textTheme.display4,
-          ),
-        ],
+              onPressed: () {},
+            ),
+            Text(
+              'Caption\nThe quick brown fox jumps over the lazy dog\n',
+              style: textTheme.caption,
+            ),
+            Text(
+              'Overline\nThe quick brown fox jumps over the lazy dog\n',
+              style: textTheme.overline,
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+enum TypographyPreviewModes {
+  accent,
+  primary,
+  classic,
 }

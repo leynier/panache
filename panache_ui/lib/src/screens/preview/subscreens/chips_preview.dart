@@ -8,11 +8,11 @@ class ChipsPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8),
       child: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -23,11 +23,11 @@ class ChipsPreview extends StatelessWidget {
                       children: <Widget>[
                         Text('Chips'),
                         Wrap(
-                          spacing: 16.0,
+                          spacing: 16,
                           children: <Widget>[
-                            Chip(label: Text('Chip')),
+                            Chip(label: const Text('Chip')),
                             Chip(
-                              label: Text('Chip'),
+                              label: const Text('Chip'),
                               avatar: Icon(Icons.person_pin),
                               onDeleted: () {},
                             ),
@@ -46,16 +46,18 @@ class ChipsPreview extends StatelessWidget {
                       children: <Widget>[
                         Text('Choice chips'),
                         Wrap(
-                          spacing: 16.0,
+                          spacing: 16,
                           alignment: WrapAlignment.start,
                           children: <Widget>[
                             ChoiceChip(
-                                label: Text('Selected Choice chip'),
+                                label: const Text('Selected Choice chip'),
                                 selected: true),
                             ChoiceChip(
-                                label: Text('Not selected'), selected: false),
+                                label: const Text('Not selected'),
+                                selected: false),
                             ChoiceChip(
-                                label: Text('Not selected 2'), selected: false),
+                                label: const Text('Not selected 2'),
+                                selected: false),
                           ],
                         ),
                       ],
@@ -65,19 +67,20 @@ class ChipsPreview extends StatelessWidget {
                 Divider(),
                 Text('Filter chips'),
                 Wrap(
-                  spacing: 16.0,
+                  spacing: 16,
                   alignment: WrapAlignment.start,
                   children: <Widget>[
                     FilterChip(
                         selected: true,
-                        label: Text('FilterChip'),
+                        label: const Text('FilterChip'),
                         onSelected: (_) {}),
                     FilterChip(
                         selected: true,
-                        label: Text('FilterChip'),
+                        label: const Text('FilterChip'),
                         onSelected: (_) {}),
                     FilterChip(
-                        label: Text('Disabled FilterChip'), onSelected: null),
+                        label: const Text('Disabled FilterChip'),
+                        onSelected: null),
                   ],
                 ),
               ],

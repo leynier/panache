@@ -33,7 +33,7 @@ class ScreenshotRenderer extends StatelessWidget {
           onTap: () => removable ? null : onThemeSelection(theme),
           child: Container(
             child: Material(
-                elevation: 2.0,
+                elevation: 2,
                 child: SizedBox(
                     width: size.width,
                     height: size.height,

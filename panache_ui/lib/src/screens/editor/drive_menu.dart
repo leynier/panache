@@ -15,7 +15,7 @@ class DriveMenu extends StatelessWidget {
     return PopupMenuButton(
       child: model.user != null
           ? Padding(
-              padding: const EdgeInsets.only(right: 16.0),
+              padding: const EdgeInsets.only(right: 16),
               child: Image.network(model.user.avatarPath, width: 32),
             )
           : null,

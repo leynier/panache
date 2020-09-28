@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
+import 'package:panache_ui/src/screens/editor/controls/slider_control.dart';
+import 'package:panache_ui/src/screens/editor/controls/text_style_control.dart';
 
 import '../controls/color_selector.dart';
-import '../controls/text_style_control.dart';
 import '../editor_utils.dart';
 
 final showIndicatorOptions = [
@@ -11,6 +12,7 @@ final showIndicatorOptions = [
   ShowValueIndicator.onlyForContinuous,
   ShowValueIndicator.onlyForDiscrete,
 ];
+String _themeRef = "sliderTheme";
 
 ///
 /// [ ] trackHeight
@@ -59,7 +61,7 @@ class SliderThemePanel extends StatelessWidget {
 
   SliderThemeData get sliderTheme => model.theme.sliderTheme;
 
-  SliderThemePanel(this.model);
+  const SliderThemePanel(this.model, {Key key}) : super(key: key);
 
   Color get thumbColor =>
       model.theme.sliderTheme.thumbColor ?? model.theme.primaryColor;
@@ -69,6 +71,8 @@ class SliderThemePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle valueIndicatorTextStyle =
+        sliderTheme.valueIndicatorTextStyle ?? createDefaultTextStyle();
     print('SliderThemePanel.build... ${model.theme.sliderTheme.toString()}');
 
     print(
@@ -76,7 +80,7 @@ class SliderThemePanel extends StatelessWidget {
     print(
         'SliderThemePanel.build... model.theme.sliderTheme.overlayColor ${model.theme.sliderTheme.overlayColor}');
 
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     final overlayColor = sliderTheme.overlayColor ?? thumbColor.withAlpha(0xB2);
     final valueIndicatorColor = sliderTheme.valueIndicatorColor ?? thumbColor;
     print('SliderThemePanel.build... overlayColor $overlayColor');
@@ -93,10 +97,10 @@ class SliderThemePanel extends StatelessWidget {
             children: <Widget>[
               Text(
                 'Show value indicator',
-                style: textTheme.subtitle,
+                style: textTheme.subtitle2,
               ),
               DropdownButton(
-                  style: textTheme.body2,
+                  style: textTheme.bodyText1,
                   value: sliderTheme.showValueIndicator,
                   items: showIndicatorOptions
                       .map(_buildIndicatorOptions)
@@ -105,104 +109,138 @@ class SliderThemePanel extends StatelessWidget {
                       sliderTheme.copyWith(showValueIndicator: value))),
             ],
           ),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Thumb color',
               thumbColor,
-              (color) =>
+              (Color color) =>
                   _updateSliderTheme(sliderTheme.copyWith(thumbColor: color)),
               padding: 0,
             ),
             ColorSelector(
               'Disabled thumb color',
               sliderTheme.disabledThumbColor ?? thumbColor.withAlpha(0xB2),
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(disabledThumbColor: color)),
               padding: 0,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Value indicator color',
               valueIndicatorColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(valueIndicatorColor: color)),
               padding: 0,
             ),
             ColorSelector(
               'Overlay color',
               overlayColor,
-              (color) =>
+              (Color color) =>
                   _updateSliderTheme(sliderTheme.copyWith(overlayColor: color)),
               padding: 0,
             ),
           ]),
-          /*
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Active track color',
               sliderTheme.activeTrackColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(activeTrackColor: color)),
               padding: 0,
             ),
             ColorSelector(
               'Active tick mark color',
               sliderTheme.activeTickMarkColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(activeTickMarkColor: color)),
               padding: 0,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Inactive track color',
               sliderTheme.inactiveTrackColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(inactiveTrackColor: color)),
               padding: 0,
             ),
             ColorSelector(
               'Inactive tick mark color',
               sliderTheme.inactiveTickMarkColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(inactiveTickMarkColor: color)),
               padding: 0,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Disabled Active track color',
               sliderTheme.disabledActiveTrackColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(disabledActiveTrackColor: color)),
               padding: 0,
             ),
             ColorSelector(
               'Disabled Active tick mark color',
               sliderTheme.disabledActiveTickMarkColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(disabledActiveTickMarkColor: color)),
               padding: 0,
             ),
-          ]),*/
-          /*getFieldsRow([
+          ]),
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Disabled Inactive track color',
               sliderTheme.disabledInactiveTrackColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(disabledInactiveTrackColor: color)),
               padding: 0,
             ),
             ColorSelector(
               'Disabled Inactive tick mark color',
               sliderTheme.disabledInactiveTickMarkColor,
-              (color) => _updateSliderTheme(
+              (Color color) => _updateSliderTheme(
                   sliderTheme.copyWith(disabledInactiveTickMarkColor: color)),
               padding: 0,
             ),
-          ]),*/
-          /*_buildValueIndicatorTextStyleControl()*/
+          ]),
+          getFieldsRow(<Widget>[
+            SliderPropertyControl(
+              sliderTheme.trackHeight ?? 4,
+              (double value) =>
+                  _updateSliderTheme(sliderTheme.copyWith(trackHeight: value)),
+              label: 'trackHeight',
+              max: 256,
+              maxWidth: 140,
+              vertical: true,
+            ),
+            SliderPropertyControl(
+              sliderTheme.minThumbSeparation ?? 0,
+              (double value) => _updateSliderTheme(
+                  sliderTheme.copyWith(minThumbSeparation: value)),
+              label: 'minThumbSeparation',
+              max: 256,
+              maxWidth: 140,
+              vertical: true,
+            ),
+          ]),
+          const Divider(
+            height: 32,
+          ),
+          const Text('valueIndicatorTextStyle'),
+          const Divider(
+            height: 32,
+          ),
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            sliderTheme.copyWith,
+            key: 'valueIndicatorTextStyle',
+            textStyle: valueIndicatorTextStyle,
+            label: 'valueIndicatorTextStyle',
+            styleName: 'valueIndicatorTextStyle',
+          ),
         ],
       ),
     );
@@ -218,21 +256,21 @@ class SliderThemePanel extends StatelessWidget {
   void _updateSliderTheme(SliderThemeData sliderTheme) =>
       model.updateTheme(model.theme.copyWith(sliderTheme: sliderTheme));
 
-  Widget _buildValueIndicatorTextStyleControl() {
+  /*Widget _buildValueIndicatorTextStyleControl() {
     print(
         'SliderThemePanel._buildValueIndicatorTextStyleControl $indicatorStyle');
     return TextStyleControl(
       'Value indicator text style',
       style: indicatorStyle,
       maxFontSize: 20,
-      onColorChanged: (c) => _updateSliderTheme(sliderTheme.copyWith(
-          valueIndicatorTextStyle: indicatorStyle.copyWith(color: c))),
+      onColorChanged: (Color color) => _updateSliderTheme(sliderTheme.copyWith(
+          valueIndicatorTextStyle: indicatorStyle.copyWith(color: color))),
       onFontStyleChanged: (bool isItalic) =>
           _updateSliderTheme(sliderTheme.copyWith(
               valueIndicatorTextStyle: indicatorStyle.copyWith(
         fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
       ))),
-      onSizeChanged: (size) => _updateSliderTheme(sliderTheme.copyWith(
+      onSizeChanged: (double  size) => _updateSliderTheme(sliderTheme.copyWith(
           valueIndicatorTextStyle: indicatorStyle.copyWith(fontSize: size))),
       onWeightChanged: (bool isBold) => _updateSliderTheme(sliderTheme.copyWith(
           valueIndicatorTextStyle: indicatorStyle.copyWith(
@@ -262,5 +300,5 @@ class SliderThemePanel extends StatelessWidget {
               valueIndicatorTextStyle: sliderTheme.valueIndicatorTextStyle
                   .copyWith(decorationColor: value))),
     );
-  }
+  }*/
 }

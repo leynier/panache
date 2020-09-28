@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:panache_core/panache_core.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'converters/theme_converter.dart';
@@ -17,8 +18,7 @@ typedef Future<Uint8List> ScreenShooter();
 class ThemeModel extends Model {
   get dirPath => _service.dir.path;
 
-  static ThemeModel of(BuildContext context) =>
-      ScopedModel.of<ThemeModel>(context);
+  static ThemeModel of(context) => ScopedModel.of<ThemeModel>(context);
 
   //final CloudService _cloudService;
 
@@ -71,7 +71,7 @@ class ThemeModel extends Model {
 
   void newTheme({
     @required MaterialColor primarySwatch,
-    Brightness brightness: Brightness.light,
+    Brightness brightness = Brightness.light,
   }) {
     assert(primarySwatch != null);
     final defaultThemeName = 'new-theme';
@@ -92,21 +92,47 @@ class ThemeModel extends Model {
 
   onChange() => notifyListeners();
 
+  /// Charger un thème depuis un fichier JSON
+  void loadThemeFromJSON(String jsonTheme) {
+    _currentTheme = PanacheTheme.fromJson(jsonTheme);
+    ThemeData myTheme = themeFromJson(jsonTheme);
+    //Initialisation du thème
+    newTheme(primarySwatch: grey);
+    //MAJ le PanacheTheme avec le JSON
+    _service.updateTheme(myTheme);
+    notifyListeners();
+  }
+
+  /// Soit charger un theme déjà fait dans un autre Brightness
+  /// Soit mettre le nouveau si inexistant
+  void loadThemeByBrightness(ThemeData updatedTheme) {
+    _service.loadThemeByBrightness(updatedTheme);
+    saveTheme();
+    notifyListeners();
+  }
+
   void updateTheme(ThemeData updatedTheme) {
     _service.updateTheme(updatedTheme);
     saveTheme();
     notifyListeners();
   }
 
-  void exportTheme({String name: 'theme'}) {
-    final code = themeToCode(theme);
+  void exportTheme({String name = 'theme'}) {
+    String code = themeToCode(theme);
     _service.exportTheme(filename: name, code: code);
   }
 
+  void exportThemeToJSON({String name = 'theme.json'}) {
+    Map<String, dynamic> code = themeToMap(theme);
+    if (code.isNotEmpty) {
+      _service.exportThemeToJSON(filename: name, code: code);
+    }
+  }
+
   void updateColor({String property, Color color}) {
-    final args = <Symbol, dynamic>{};
+    Map<Symbol, dynamic> args = <Symbol, dynamic>{};
     args[Symbol(property)] = color;
-    final updatedTheme = Function.apply(theme.copyWith, null, args);
+    ThemeData updatedTheme = Function.apply(theme.copyWith, null, args);
     updateTheme(updatedTheme);
   }
 

@@ -11,19 +11,21 @@ class ExpanderHeader extends StatelessWidget {
       {@required this.color,
       @required this.label,
       @required this.icon,
-      this.dense}) {
+      this.dense,
+      Key key})
+      : super(key: key) {
     print('Label... $label $dense');
   }
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 16.0, right: 8.0),
+            padding: EdgeInsets.only(left: 16, right: 8),
             child: Icon(
               icon,
               color: color,
@@ -31,7 +33,7 @@ class ExpanderHeader extends StatelessWidget {
           ),
           Text(
             label,
-            style: dense ? textTheme.subhead : textTheme.title,
+            style: dense ? textTheme.subtitle1 : textTheme.headline6,
           ),
         ],
       ),

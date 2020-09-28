@@ -33,8 +33,8 @@ abstract class GradientSliderComponentShape {
 
 class RectSliderThumbShape extends GradientSliderComponentShape {
   const RectSliderThumbShape();
-  static const double _thumbRadius = 6.0;
-  static const double _disabledThumbRadius = 4.0;
+  static const double _thumbRadius = 6;
+  static const double _disabledThumbRadius = 4;
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -61,8 +61,8 @@ class RectSliderThumbShape extends GradientSliderComponentShape {
       end: colorValue ?? Colors.white,
     );
     canvas.drawRect(
-      Rect.fromPoints(Offset(thumbCenter.dx - 3.0, thumbCenter.dy - 6.0),
-          Offset(thumbCenter.dx + 3.0, thumbCenter.dy + 6.0)),
+      Rect.fromPoints(Offset(thumbCenter.dx - 3, thumbCenter.dy - 6),
+          Offset(thumbCenter.dx + 3, thumbCenter.dy + 6)),
       new Paint()..color = colorTween.evaluate(enableAnimation),
     );
   }
@@ -71,8 +71,8 @@ class RectSliderThumbShape extends GradientSliderComponentShape {
 class RoundColorSliderThumbShape extends GradientSliderComponentShape {
   const RoundColorSliderThumbShape();
 
-  static const double _thumbRadius = 6.0;
-  static const double _disabledThumbRadius = 4.0;
+  static const double _thumbRadius = 6;
+  static const double _disabledThumbRadius = 4;
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -114,7 +114,7 @@ class RoundColorSliderThumbShape extends GradientSliderComponentShape {
         new Paint()
           ..color = getContrastColor(colorValue, limit: 650)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0);
+          ..strokeWidth = 2);
   }
 }
 
@@ -122,20 +122,20 @@ class PaddleSliderColorValueIndicatorShape
     extends GradientSliderComponentShape {
   const PaddleSliderColorValueIndicatorShape();
 
-  static const double _topLobeRadius = 16.0;
-  static const double _labelTextDesignSize = 14.0;
-  static const double _bottomLobeRadius = 6.0;
-  static const double _bottomLobeStartAngle = -1.1 * math.pi / 4.0;
-  static const double _bottomLobeEndAngle = 1.1 * 5 * math.pi / 4.0;
-  static const double _labelPadding = 8.0;
-  static const double _distanceBetweenTopBottomCenters = 40.0;
+  static const double _topLobeRadius = 16;
+  static const double _labelTextDesignSize = 14;
+  static const double _bottomLobeRadius = 6;
+  static const double _bottomLobeStartAngle = -1.1 * math.pi / 4;
+  static const double _bottomLobeEndAngle = 1.1 * 5 * math.pi / 4;
+  static const double _labelPadding = 8;
+  static const double _distanceBetweenTopBottomCenters = 40;
   static const Offset _topLobeCenter =
-      const Offset(0.0, -_distanceBetweenTopBottomCenters);
-  static const double _topNeckRadius = 14.0;
+      const Offset(0, -_distanceBetweenTopBottomCenters);
+  static const double _topNeckRadius = 14;
   static const double _neckTriangleHypotenuse = _topLobeRadius + _topNeckRadius;
-  static const double _twoSeventyDegrees = 3.0 * math.pi / 2.0;
-  static const double _ninetyDegrees = math.pi / 2.0;
-  static const double _thirtyDegrees = math.pi / 6.0;
+  static const double _twoSeventyDegrees = 3.0 * math.pi / 2;
+  static const double _ninetyDegrees = math.pi / 2;
+  static const double _thirtyDegrees = math.pi / 6;
   static const Size _preferredSize = const Size.fromHeight(
       _distanceBetweenTopBottomCenters + _topLobeRadius + _bottomLobeRadius);
   static const bool _debuggingLabelLocation = false;
@@ -155,7 +155,7 @@ class PaddleSliderColorValueIndicatorShape
   static void _generateBottomLobe() {
     const double bottomNeckRadius = 4.5;
     const double bottomNeckStartAngle = _bottomLobeEndAngle - math.pi;
-    const double bottomNeckEndAngle = 0.0;
+    const double bottomNeckEndAngle = 0;
 
     final Path path = new Path();
     final Offset bottomKnobStart = new Offset(
@@ -219,7 +219,7 @@ class PaddleSliderColorValueIndicatorShape
     double scale,
     Offset center,
   ) {
-    const double edgeMargin = 4.0;
+    const double edgeMargin = 4;
     final Rect topLobeRect = new Rect.fromLTWH(
       -_topLobeRadius - halfWidthNeeded,
       -_topLobeRadius - _distanceBetweenTopBottomCenters,
@@ -229,7 +229,7 @@ class PaddleSliderColorValueIndicatorShape
 
     final Offset topLeft = (topLobeRect.topLeft * scale) + center;
     final Offset bottomRight = (topLobeRect.bottomRight * scale) + center;
-    double shift = 0.0;
+    double shift = 0;
     if (topLeft.dx < edgeMargin) {
       shift = edgeMargin - topLeft.dx;
     }
@@ -254,11 +254,11 @@ class PaddleSliderColorValueIndicatorShape
     final double overallScale = scale * textScaleFactor;
     canvas.scale(overallScale, overallScale);
     final double inverseTextScale =
-        textScaleFactor != 0 ? 1.0 / textScaleFactor : 0.0;
-    final double labelHalfWidth = labelPainter.width / 2.0;
+        textScaleFactor != 0 ? 1.0 / textScaleFactor : 0;
+    final double labelHalfWidth = labelPainter.width / 2;
 
     final double halfWidthNeeded = math.max(
-      0.0,
+      0,
       inverseTextScale * labelHalfWidth - (_topLobeRadius - _labelPadding),
     );
 
@@ -266,7 +266,7 @@ class PaddleSliderColorValueIndicatorShape
         _getIdealOffset(parentBox, halfWidthNeeded, overallScale, center);
     double leftWidthNeeded;
     double rightWidthNeeded;
-    if (shift < 0.0) {
+    if (shift < 0) {
       shift = math.max(shift, -halfWidthNeeded);
     } else {
       shift = math.min(shift, halfWidthNeeded);
@@ -280,9 +280,9 @@ class PaddleSliderColorValueIndicatorShape
     final double neckTriangleBase = _topNeckRadius - bottomLobeEnd.dx;
 
     final double leftAmount =
-        math.max(0.0, math.min(1.0, leftWidthNeeded / neckTriangleBase));
+        math.max(0, math.min(1, leftWidthNeeded / neckTriangleBase));
     final double rightAmount =
-        math.max(0.0, math.min(1.0, rightWidthNeeded / neckTriangleBase));
+        math.max(0, math.min(1, rightWidthNeeded / neckTriangleBase));
 
     final double leftTheta = (1.0 - leftAmount) * _thirtyDegrees;
     final double rightTheta = (1.0 - rightAmount) * _thirtyDegrees;
@@ -300,17 +300,17 @@ class PaddleSliderColorValueIndicatorShape
 
     final double neckStretchBaseline =
         bottomLobeEnd.dy - math.max(neckLeftCenter.dy, neckRightCenter.dy);
-    final double t = math.pow(inverseTextScale, 3.0);
+    final double t = math.pow(inverseTextScale, 3);
     final double stretch =
-        (neckStretchBaseline * t).clamp(0.0, 10.0 * neckStretchBaseline);
-    final Offset neckStretch = new Offset(0.0, neckStretchBaseline - stretch);
+        (neckStretchBaseline * t).clamp(0, 10.0 * neckStretchBaseline);
+    final Offset neckStretch = new Offset(0, neckStretchBaseline - stretch);
 
     assert(!_debuggingLabelLocation ||
         () {
           final Offset leftCenter =
-              _topLobeCenter - new Offset(leftWidthNeeded, 0.0) + neckStretch;
+              _topLobeCenter - new Offset(leftWidthNeeded, 0) + neckStretch;
           final Offset rightCenter =
-              _topLobeCenter + new Offset(rightWidthNeeded, 0.0) + neckStretch;
+              _topLobeCenter + new Offset(rightWidthNeeded, 0) + neckStretch;
           final Rect valueRect = new Rect.fromLTRB(
             leftCenter.dx - _topLobeRadius,
             leftCenter.dy - _topLobeRadius,
@@ -320,7 +320,7 @@ class PaddleSliderColorValueIndicatorShape
           final Paint outlinePaint = new Paint()
             ..color = const Color(0xffff0000)
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 1.0;
+            ..strokeWidth = 1;
           canvas.drawRect(valueRect, outlinePaint);
           return true;
         }());
@@ -329,19 +329,19 @@ class PaddleSliderColorValueIndicatorShape
       path,
       neckLeftCenter + neckStretch,
       _topNeckRadius,
-      0.0,
+      0,
       -leftNeckArcAngle,
     );
     _addArc(
       path,
-      _topLobeCenter - new Offset(leftWidthNeeded, 0.0) + neckStretch,
+      _topLobeCenter - new Offset(leftWidthNeeded, 0) + neckStretch,
       _topLobeRadius,
       _ninetyDegrees + leftTheta,
       _twoSeventyDegrees,
     );
     _addArc(
       path,
-      _topLobeCenter + new Offset(rightWidthNeeded, 0.0) + neckStretch,
+      _topLobeCenter + new Offset(rightWidthNeeded, 0) + neckStretch,
       _topLobeRadius,
       _twoSeventyDegrees,
       _twoSeventyDegrees + math.pi - rightTheta,
@@ -360,7 +360,7 @@ class PaddleSliderColorValueIndicatorShape
     canvas.translate(shift, -_distanceBetweenTopBottomCenters + neckStretch.dy);
     canvas.scale(inverseTextScale, inverseTextScale);
     labelPainter.paint(canvas,
-        Offset.zero - new Offset(labelHalfWidth, labelPainter.height / 2.0));
+        Offset.zero - new Offset(labelHalfWidth, labelPainter.height / 2));
     canvas.restore();
     canvas.restore();
   }
@@ -405,8 +405,8 @@ class GradientSlider extends StatefulWidget {
     @required this.endColor,
     @required this.thumbColor,
     this.colors,
-    this.min: 0.0,
-    this.max: 1.0,
+    this.min: 0,
+    this.max: 1,
     this.label,
   })  : assert(value != null),
         assert(min != null),
@@ -480,7 +480,7 @@ class _ColorGradientSliderState extends State<GradientSlider>
 
     interactionTimer = new Timer(Duration.zero, () {});
     interactionTimer.cancel();
-    enableController.value = widget.onChanged != null ? 1.0 : 0.0;
+    enableController.value = widget.onChanged != null ? 1.0 : 0;
     positionController.value = _unlerp(widget.value);
   }
 
@@ -508,8 +508,8 @@ class _ColorGradientSliderState extends State<GradientSlider>
   }
 
   double _lerp(double value) {
-    assert(value >= 0.0);
-    assert(value <= 1.0);
+    assert(value >= 0);
+    assert(value <= 1);
     return value * (widget.max - widget.min) + widget.min;
   }
 
@@ -518,7 +518,7 @@ class _ColorGradientSliderState extends State<GradientSlider>
     assert(value >= widget.min);
     return widget.max > widget.min
         ? (value - widget.min) / (widget.max - widget.min)
-        : 0.0;
+        : 0;
   }
 
   @override
@@ -616,7 +616,7 @@ class _RenderSlider extends RenderBox {
     ValueChanged<double> onChanged,
     @required _ColorGradientSliderState state,
     @required TextDirection textDirection,
-  })  : assert(value != null && value >= 0.0 && value <= 1.0),
+  })  : assert(value != null && value >= 0.0 && value <= 1),
         assert(state != null),
         assert(textDirection != null),
         _label = label,
@@ -662,10 +662,10 @@ class _RenderSlider extends RenderBox {
 
   static const Duration _positionAnimationDuration =
       const Duration(milliseconds: 75);
-  static const double _overlayRadius = 16.0;
-  static const double _overlayDiameter = _overlayRadius * 2.0;
-  static const double _railHeight = 12.0;
-  static const double _preferredRailWidth = 144.0;
+  static const double _overlayRadius = 16;
+  static const double _overlayDiameter = _overlayRadius * 2;
+  static const double _railHeight = 12;
+  static const double _preferredRailWidth = 144;
   static const double _preferredTotalWidth =
       _preferredRailWidth + _overlayDiameter;
   static const Duration _minimumInteractionTime =
@@ -673,7 +673,7 @@ class _RenderSlider extends RenderBox {
   static const double _adjustmentUnit =
       0.1; // Matches iOS implementation of material slider.
   static final Tween<double> _overlayRadiusTween =
-      new Tween<double>(begin: 0.0, end: _overlayRadius);
+      new Tween<double>(begin: 0, end: _overlayRadius);
 
   _ColorGradientSliderState _state;
   Animation<double> _overlayAnimation;
@@ -683,7 +683,7 @@ class _RenderSlider extends RenderBox {
   HorizontalDragGestureRecognizer _drag;
   TapGestureRecognizer _tap;
   bool _active = false;
-  double _currentDragValue = 0.0;
+  double _currentDragValue = 0;
 
   double get _railLength => size.width - _overlayDiameter;
 
@@ -694,7 +694,7 @@ class _RenderSlider extends RenderBox {
   double get value => _value;
   double _value;
   set value(double newValue) {
-    assert(newValue != null && newValue >= 0.0 && newValue <= 1.0);
+    assert(newValue != null && newValue >= 0.0 && newValue <= 1);
     final double convertedValue = newValue;
     if (convertedValue == _value) {
       return;
@@ -703,7 +703,7 @@ class _RenderSlider extends RenderBox {
     if (isDiscrete) {
       final double distance = (_value - _state.positionController.value).abs();
       _state.positionController.duration =
-          distance != 0.0 ? _positionAnimationDuration * (1.0 / distance) : 0.0;
+          distance != 0.0 ? _positionAnimationDuration * (1.0 / distance) : 0;
       _state.positionController
           .animateTo(convertedValue, curve: Curves.easeInOut);
     } else {
@@ -834,7 +834,7 @@ class _RenderSlider extends RenderBox {
     if (label != null) {
       _labelPainter
         ..text = new TextSpan(
-            style: _theme.accentTextTheme.body2
+            style: _theme.accentTextTheme.bodyText1
                 .copyWith(color: getContrastColor(_thumbColor)),
             text: label)
         ..textDirection = textDirection
@@ -884,7 +884,7 @@ class _RenderSlider extends RenderBox {
     if (isInteractive) {
       _active = true;
       _currentDragValue = _getValueFromGlobalPosition(globalPosition);
-      onChanged(min(max(0.0, _currentDragValue), 1.0));
+      onChanged(min(max(0, _currentDragValue), 1));
       _state.overlayController.forward();
       if (showValueIndicator) {
         _state.valueIndicatorController.forward();
@@ -907,7 +907,7 @@ class _RenderSlider extends RenderBox {
   void _endInteraction() {
     if (_active) {
       _active = false;
-      _currentDragValue = 0.0;
+      _currentDragValue = 0;
       _state.overlayController.reverse();
       if (showValueIndicator && !_state.interactionTimer.isActive) {
         _state.valueIndicatorController.reverse();
@@ -929,7 +929,7 @@ class _RenderSlider extends RenderBox {
           _currentDragValue += valueDelta;
           break;
       }
-      onChanged(min(max(0.0, _currentDragValue), 1.0));
+      onChanged(min(max(0, _currentDragValue), 1));
     }
   }
 
@@ -1010,9 +1010,9 @@ class _RenderSlider extends RenderBox {
         break;
     }
 
-    const double railRadius = _railHeight / 2.0;
+    const double railRadius = _railHeight / 2;
 
-    final double railVerticalCenter = offset.dy + (size.height) / 2.0;
+    final double railVerticalCenter = offset.dy + (size.height) / 2;
     final double railLeft = offset.dx + _overlayRadius;
     final double railTop = railVerticalCenter - railRadius;
     final double railBottom = railVerticalCenter + railRadius;
@@ -1086,18 +1086,18 @@ class _RenderSlider extends RenderBox {
 
   void _increaseAction() {
     if (isInteractive) {
-      onChanged((value + _semanticActionUnit).clamp(0.0, 1.0));
+      onChanged((value + _semanticActionUnit).clamp(0, 1));
     }
   }
 
   void _decreaseAction() {
     if (isInteractive) {
-      onChanged((value - _semanticActionUnit).clamp(0.0, 1.0));
+      onChanged((value - _semanticActionUnit).clamp(0, 1));
     }
   }
 }
 
-class GradientSliderThemeData extends Diagnosticable {
+class GradientSliderThemeData with Diagnosticable {
   const GradientSliderThemeData({
     @required this.startRailColor,
     @required this.endRailColor,
@@ -1290,7 +1290,7 @@ class GradientSliderTheme extends InheritedWidget {
 
   final SliderThemeData data;
 
-  static GradientSliderThemeData of(BuildContext context) {
+  static GradientSliderThemeData of(context) {
     final SliderTheme inheritedTheme =
         context.inheritFromWidgetOfExactType(SliderTheme);
     return inheritedTheme != null

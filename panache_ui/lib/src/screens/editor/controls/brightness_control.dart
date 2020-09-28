@@ -10,31 +10,33 @@ class BrightnessSelector extends StatelessWidget {
 
   final Axis direction;
 
-  BrightnessSelector(
+  const BrightnessSelector(
       {this.label,
       this.isDark,
       this.onChange,
       this.onBrightnessChanged,
-      this.direction: Axis.vertical});
+      this.direction = Axis.vertical,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final labelStyle = textTheme.subtitle;
+    TextTheme textTheme = Theme.of(context).textTheme;
+    final labelStyle = textTheme.subtitle2;
     return ControlContainerBorder(
       child: Flex(
         direction: direction,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 16),
             child: Text(
               label,
               style: labelStyle,
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: Colors.white,

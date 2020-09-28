@@ -9,16 +9,17 @@ class FontSizeSelector extends StatefulWidget {
   final bool vertical;
   final ValueChanged<double> onValueChanged;
 
-  FontSizeSelector(this.value, this.onValueChanged,
-      {this.min: 0.0, this.max: 112.0, this.vertical})
+  const FontSizeSelector(this.value, this.onValueChanged,
+      {this.min = 0, this.max = 112, this.vertical, Key key})
       : assert(value != null),
         assert(min != null),
         assert(max != null),
-        assert(min <= max);
+        assert(min <= max),
+        super(key: key);
 
   @override
   FontSizeSelectorState createState() {
-    return new FontSizeSelectorState();
+    return FontSizeSelectorState();
   }
 }
 
@@ -33,7 +34,7 @@ class FontSizeSelectorState extends State<FontSizeSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     return ControlContainerBorder(
       child: Flex(
         direction: widget.vertical ? Axis.vertical : Axis.horizontal,
@@ -58,11 +59,11 @@ class FontSizeSelectorState extends State<FontSizeSelector> {
           RichText(
             text: TextSpan(
                 text: 'Font size ',
-                style: textTheme.subtitle,
+                style: textTheme.subtitle2,
                 children: [
                   TextSpan(
                     text: widget.value.toStringAsFixed(1),
-                    style: textTheme.body1,
+                    style: textTheme.bodyText2,
                   )
                 ]),
           ),

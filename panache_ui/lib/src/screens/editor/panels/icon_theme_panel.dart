@@ -20,41 +20,41 @@ class IconThemePanel extends StatelessWidget {
 
   IconThemeData get accentIconTheme => model.theme.accentIconTheme;
 
-  IconThemePanel(this.model);
+  const IconThemePanel(this.model, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     return Container(
       padding: kPadding,
       color: Colors.grey.shade100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Icon theme', style: textTheme.subhead),
+          Text('Icon theme', style: textTheme.subtitle1),
           ColorSelector(
             'Color',
             iconTheme.color,
-            (color) => _updateIconTheme(iconTheme.copyWith(color: color)),
+            (Color color) => _updateIconTheme(iconTheme.copyWith(color: color)),
             padding: 4,
           ),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             SliderPropertyControl(
               iconTheme.size ?? 12,
-              (size) => _updateIconTheme(iconTheme.copyWith(size: size)),
+              (double size) => _updateIconTheme(iconTheme.copyWith(size: size)),
               label: 'Size',
               min: 8,
               max: 64,
-              maxWidth: 140.0,
+              maxWidth: 140,
               vertical: true,
             ),
             SliderPropertyControl(
-              iconTheme.opacity ?? 1.0,
-              (opacity) =>
+              iconTheme.opacity ?? 1,
+              (double opacity) =>
                   _updateIconTheme(iconTheme.copyWith(opacity: opacity)),
               label: 'Opacity',
-              min: 0.0,
-              max: 1.0,
+              min: 0,
+              max: 1,
               vertical: true,
               showDivisions: false,
             ),
@@ -62,18 +62,18 @@ class IconThemePanel extends StatelessWidget {
           Divider(
             height: 32,
           ),
-          Text('Primary icon theme', style: textTheme.subhead),
+          Text('Primary icon theme', style: textTheme.subtitle1),
           ColorSelector(
             'Color',
             primaryIconTheme.color,
-            (color) => _updatePrimaryIconTheme(
+            (Color color) => _updatePrimaryIconTheme(
                 primaryIconTheme.copyWith(color: color)),
             padding: 0,
           ),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             SliderPropertyControl(
               primaryIconTheme.size ?? 12,
-              (size) => _updatePrimaryIconTheme(
+              (double size) => _updatePrimaryIconTheme(
                   primaryIconTheme.copyWith(size: size)),
               label: 'Size',
               min: 8,
@@ -81,12 +81,12 @@ class IconThemePanel extends StatelessWidget {
               vertical: true,
             ),
             SliderPropertyControl(
-              primaryIconTheme.opacity ?? 1.0,
-              (opacity) => _updatePrimaryIconTheme(
+              primaryIconTheme.opacity ?? 1,
+              (double opacity) => _updatePrimaryIconTheme(
                   primaryIconTheme.copyWith(opacity: opacity)),
               label: 'Opacity',
-              min: 0.0,
-              max: 1.0,
+              min: 0,
+              max: 1,
               vertical: true,
               showDivisions: false,
             ),
@@ -94,18 +94,18 @@ class IconThemePanel extends StatelessWidget {
           Divider(
             height: 32,
           ),
-          Text('Accent icon theme', style: textTheme.subhead),
+          Text('Accent icon theme', style: textTheme.subtitle1),
           ColorSelector(
             'Color',
             accentIconTheme.color,
-            (color) =>
+            (Color color) =>
                 _updateAccentIconTheme(accentIconTheme.copyWith(color: color)),
             padding: 0,
           ),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             SliderPropertyControl(
               accentIconTheme.size ?? 12,
-              (size) =>
+              (double size) =>
                   _updateAccentIconTheme(accentIconTheme.copyWith(size: size)),
               label: 'Size',
               min: 8,
@@ -113,12 +113,12 @@ class IconThemePanel extends StatelessWidget {
               vertical: true,
             ),
             SliderPropertyControl(
-              accentIconTheme.opacity ?? 1.0,
-              (opacity) => _updateAccentIconTheme(
+              accentIconTheme.opacity ?? 1,
+              (double opacity) => _updateAccentIconTheme(
                   accentIconTheme.copyWith(opacity: opacity)),
               label: 'Opacity',
-              min: 0.0,
-              max: 1.0,
+              min: 0,
+              max: 1,
               vertical: true,
               showDivisions: false,
             ),

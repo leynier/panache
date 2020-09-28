@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
 
@@ -11,38 +12,45 @@ class ColorSelector extends StatelessWidget {
   final Color value;
   final ValueChanged<Color> onSelection;
   final double padding;
+  final bool enabled;
 
   final double maxLabelWidth;
 
   final HelpData help;
 
-  ColorSelector(this.label, this.value, this.onSelection,
-      {this.padding: 8.0, this.maxLabelWidth: 100, this.help});
+  const ColorSelector(this.label, this.value, this.onSelection,
+      {this.padding = 8,
+      this.maxLabelWidth = 100,
+      this.help,
+      this.enabled = true,
+      Key key})
+      : super(key: key);
 
   String get colorLabel {
-    final namedPeer =
-        namedColors().where((c) => c.color?.value == value?.value);
-    return namedPeer.length > 0
+    Iterable<NamedColor> namedPeer = namedColors().where(
+        (NamedColor namedColor) => namedColor.color?.value == value?.value);
+    return namedPeer.isNotEmpty
         ? namedPeer.first.name
-        : "#${value.value.toRadixString(16)}";
+        : value != null
+            ? "#${value.value.toRadixString(16)}"
+            : "#${Colors.black.value.toRadixString(16)}";
   }
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     return ControlContainerBorder(
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           Flexible(
             child: Row(
               children: <Widget>[
                 Text.rich(
                   TextSpan(
                       text: '$label\n',
-                      style: Theme.of(context).textTheme.subtitle,
-                      children: [
+                      style: Theme.of(context).textTheme.subtitle2,
+                      children: <InlineSpan>[
                         TextSpan(
                             text: colorLabel,
                             style: textTheme.overline.copyWith(height: 1.5)
@@ -53,9 +61,24 @@ class ColorSelector extends StatelessWidget {
               ],
             ),
           ),
-          ColorSwatchControl(color: value, onSelection: onSelection),
+          ColorSwatchControl(
+              color: value, onSelection: enabled ? onSelection : null),
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('label', label));
+    properties.add(ColorProperty('value', value));
+    properties.add(
+        ObjectFlagProperty<Function(Color)>.has('onSelection', onSelection));
+    properties.add(StringProperty('colorLabel', colorLabel));
+    properties.add(DoubleProperty('padding', padding));
+    properties.add(DiagnosticsProperty<bool>('enabled', enabled));
+    properties.add(DoubleProperty('maxLabelWidth', maxLabelWidth));
+    properties.add(DiagnosticsProperty<HelpData>('help', help));
   }
 }

@@ -1,39 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
+import 'package:panache_ui/src/screens/editor/controls/color_scheme_control.dart';
+import 'package:panache_ui/src/screens/editor/controls/drop_down_control.dart';
 
-import '../controls/shape_form_control.dart';
-import '../controls/slider_control.dart';
-import '../controls/switcher_control.dart';
+import '../../../help/help.dart';
 import '../controls/color_selector.dart';
 import '../controls/control_container.dart';
 import '../controls/help_button.dart';
+import '../controls/shape_form_control.dart';
+import '../controls/slider_control.dart';
+import '../controls/switcher_control.dart';
 import '../editor_utils.dart';
-import '../../../help/help.dart';
 
 class ButtonThemePanel extends StatelessWidget {
   final ThemeModel model;
 
   ButtonThemeData get buttonTheme => model.theme.buttonTheme;
 
-  ButtonThemePanel(this.model);
+  ButtonThemePanel(this.model, {Key key}) : super(key: key);
+
+  final List<SelectionItem<ButtonBarLayoutBehavior>> _layoutBehaviors =
+      <SelectionItem<ButtonBarLayoutBehavior>>[
+    SelectionItem<ButtonBarLayoutBehavior>(
+        'constrained   ', ButtonBarLayoutBehavior.constrained),
+    SelectionItem<ButtonBarLayoutBehavior>(
+        'padded  ', ButtonBarLayoutBehavior.padded),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final appTextTheme = Theme.of(context).textTheme;
-    final labelStyle = appTextTheme.subtitle;
-    final dropdownTextStyle = appTextTheme.body2;
+    TextTheme appTextTheme = Theme.of(context).textTheme;
+    final labelStyle = appTextTheme.subtitle2;
+    final dropdownTextStyle = appTextTheme.bodyText1;
 
     return Container(
       padding: kPadding,
       color: Colors.grey.shade200,
       child: Column(
         children: <Widget>[
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Raised button fill color',
               buttonTheme.getFillColor(enabledRaisedButton),
               /* TODO update theme.buttonColor ? */
-              (color) => _onButtonThemeChanged(
+              (Color color) => _onButtonThemeChanged(
                   buttonTheme.copyWith(buttonColor: color)),
               padding: 2,
               help: buttonColorHelp,
@@ -41,18 +51,18 @@ class ButtonThemePanel extends StatelessWidget {
             ColorSelector(
               'Raised button disabled color',
               buttonTheme.getDisabledFillColor(disabledRaisedButton),
-              (color) => _onButtonThemeChanged(
+              (Color color) => _onButtonThemeChanged(
                   buttonTheme.copyWith(disabledColor: color)),
               padding: 2,
               help: disabledColorHelp,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             /* longpress / pressed color */
             ColorSelector(
               'Highlight color',
               buttonTheme.getHighlightColor(enabledRaisedButton),
-              (color) => _onButtonThemeChanged(
+              (Color color) => _onButtonThemeChanged(
                   buttonTheme.copyWith(highlightColor: color)),
               padding: 2,
               help: highlightColorHelp,
@@ -61,18 +71,18 @@ class ButtonThemePanel extends StatelessWidget {
             ColorSelector(
               'Splash color',
               buttonTheme.getSplashColor(enabledRaisedButton),
-              (color) => _onButtonThemeChanged(
+              (Color color) => _onButtonThemeChanged(
                   buttonTheme.copyWith(splashColor: color)),
               padding: 2,
               help: splashColorHelp,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             /* focus color */
             ColorSelector(
               'Focus color',
               buttonTheme.getFocusColor(enabledRaisedButton),
-              (color) => _onButtonThemeChanged(
+              (Color color) => _onButtonThemeChanged(
                   buttonTheme.copyWith(focusColor: color)),
               padding: 2,
               help: focusColorHelp,
@@ -81,7 +91,7 @@ class ButtonThemePanel extends StatelessWidget {
             ColorSelector(
               'Hover color',
               buttonTheme.getHoverColor(enabledRaisedButton),
-              (color) => _onButtonThemeChanged(
+              (Color color) => _onButtonThemeChanged(
                   buttonTheme.copyWith(hoverColor: color)),
               padding: 2,
               help: hoverColorHelp,
@@ -95,7 +105,7 @@ class ButtonThemePanel extends StatelessWidget {
               context: context,
             ),
             ShapeFormControl(
-              onShapeChanged: (shape) =>
+              onShapeChanged: (ShapeBorder shape) =>
                   _onButtonThemeChanged(buttonTheme.copyWith(shape: shape)),
               shape: buttonTheme.shape,
               labelStyle: labelStyle,
@@ -103,7 +113,7 @@ class ButtonThemePanel extends StatelessWidget {
             )
           ]),
           Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
+            padding: const EdgeInsets.only(bottom: 4),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -126,13 +136,29 @@ class ButtonThemePanel extends StatelessWidget {
               ],
             ),
           ),
-          _buildButtonSizeControl(
-              buttonTheme), /*
+          _buildButtonSizeControl(buttonTheme),
+          getFieldsRow(
+            <Widget>[
+              PanacheDropdown<SelectionItem<ButtonBarLayoutBehavior>>(
+                label: 'ButtonTextTheme ',
+                selection: buttonTheme.layoutBehavior != null
+                    ? _layoutBehaviors.firstWhere(
+                        (SelectionItem<ButtonBarLayoutBehavior> item) =>
+                            item.value == buttonTheme.layoutBehavior)
+                    : _layoutBehaviors.first,
+                collection: _layoutBehaviors,
+                onValueChanged:
+                    (SelectionItem<ButtonBarLayoutBehavior> layoutBehavior) =>
+                        _onButtonThemeChanged(buttonTheme.copyWith(
+                            layoutBehavior: layoutBehavior.value)),
+              ),
+            ],
+          ),
           ColorSchemeControl(
             scheme: buttonTheme.colorScheme,
-            onSchemeChanged: (scheme) => _onButtonThemeChanged(
+            onSchemeChanged: (ColorScheme scheme) => _onButtonThemeChanged(
                 buttonTheme.copyWith(colorScheme: scheme)),
-          )*/
+          )
         ],
       ),
     );
@@ -142,8 +168,8 @@ class ButtonThemePanel extends StatelessWidget {
     final minWidth = theme.minWidth;
     final height = theme.height;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
-      child: getFieldsRow([
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+      child: getFieldsRow(<Widget>[
         SliderPropertyControl(
           minWidth,
           (width) =>
@@ -174,12 +200,12 @@ class ButtonThemePanel extends StatelessWidget {
   }) {
     return Expanded(
       child: ControlContainerBorder(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.all(4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(right: 16.0),
+              padding: const EdgeInsets.only(right: 16),
               child: Row(
                 children: <Widget>[
                   Text('Text theme', style: labelStyle),

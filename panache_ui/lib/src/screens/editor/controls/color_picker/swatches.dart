@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
 
-const _kGridSpacing = 6.0;
+double _kGridSpacing = 6;
 
 class ColorSwatchesWidget extends StatelessWidget {
   final Color color;
 
-  ColorSwatchesWidget(this.color);
+  const ColorSwatchesWidget(this.color, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final c = newColorSwatch(color);
 
     return LayoutBuilder(
-      builder: (context, constraints) {
+      builder: (BuildContext context, constraints) {
         final itemWidth = (constraints.maxWidth - _kGridSpacing) / 2;
         return Column(
           children: <Widget>[
@@ -21,7 +21,7 @@ class ColorSwatchesWidget extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 'Swatches',
-                style: Theme.of(context).textTheme.subhead.copyWith(
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
                     color: getContrastColor(getSwatchShade(color, 700))),
               ),
             ),
@@ -31,12 +31,12 @@ class ColorSwatchesWidget extends StatelessWidget {
               children: getMaterialColorShades(c).map<Widget>((c) {
                 return Container(
                   alignment: Alignment.center,
-                  color: c,
+                  color: color,
                   width: itemWidth,
-                  height: 60.0,
+                  height: 60,
                   child: Text(colorToHex32(c),
                       style: TextStyle(
-                        fontSize: 14.0,
+                        fontSize: 14,
                         color: getContrastColor(c),
                       )),
                 );

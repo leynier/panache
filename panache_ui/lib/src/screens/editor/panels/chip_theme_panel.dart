@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
+import 'package:panache_ui/src/screens/editor/controls/slider_control.dart';
 
 import '../controls/color_selector.dart';
 import '../controls/shape_form_control.dart';
@@ -7,21 +8,22 @@ import '../controls/switcher_control.dart';
 import '../controls/text_style_control.dart';
 import '../editor_utils.dart';
 
-const _themeRef = 'chipTheme';
+String _themeRef = 'chipTheme';
 
 class ChipThemePanel extends StatelessWidget {
   final ThemeModel model;
 
   ChipThemeData get chipTheme => model.theme.chipTheme;
 
-  ChipThemePanel(this.model);
+  const ChipThemePanel(this.model, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final appTextTheme = Theme.of(context).textTheme;
-    final labelStyle = appTextTheme.subtitle;
-    final chipLabelStyle = chipTheme.labelStyle;
-    final secondaryLabelStyle = chipTheme.secondaryLabelStyle;
+    TextTheme appTextTheme = Theme.of(context).textTheme;
+    TextStyle labelStyle = appTextTheme.subtitle2;
+    TextStyle chipLabelStyle = chipTheme.labelStyle;
+    TextStyle secondaryLabelStyle =
+        chipTheme.secondaryLabelStyle ?? createDefaultTextStyle();
 
     return Container(
       padding: kPadding,
@@ -31,52 +33,110 @@ class ChipThemePanel extends StatelessWidget {
           ColorSelector(
             'Background color',
             model.theme.chipTheme.backgroundColor,
-            (color) =>
+            (Color color) =>
                 _updateChipTheme(chipTheme.copyWith(backgroundColor: color)),
             padding: 2,
             maxLabelWidth: 250,
           ),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Secondary selected color',
               model.theme.chipTheme.secondarySelectedColor,
-              (color) => _updateChipTheme(
+              (Color color) => _updateChipTheme(
                   chipTheme.copyWith(secondarySelectedColor: color)),
               padding: 2,
             ),
             ColorSelector(
               'Selected color',
               model.theme.chipTheme.selectedColor,
-              (color) =>
+              (Color color) =>
                   _updateChipTheme(chipTheme.copyWith(selectedColor: color)),
               padding: 2,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Disabled color',
               model.theme.chipTheme.disabledColor,
-              (color) =>
+              (Color color) =>
                   _updateChipTheme(chipTheme.copyWith(disabledColor: color)),
               padding: 2,
             ),
             ColorSelector(
               'Delete icon color',
               model.theme.chipTheme.deleteIconColor,
-              (color) =>
+              (Color color) =>
                   _updateChipTheme(chipTheme.copyWith(deleteIconColor: color)),
               padding: 2,
             ),
           ]),
-          Divider(),
-          _buildTextStyleControl(
+          getFieldsRow(<Widget>[
+            ColorSelector(
+              'checkmarkColor',
+              model.theme.chipTheme.checkmarkColor,
+              (Color color) =>
+                  _updateChipTheme(chipTheme.copyWith(checkmarkColor: color)),
+              padding: 2,
+            ),
+            /*SwitcherControl(
+              label: 'showCheckmark',
+              checked: model.theme.chipTheme.showCheckmark,
+              direction: Axis.vertical,
+              onChange: (bool value) =>
+                  _updateChipTheme(chipTheme.copyWith(showCheckmark: value)),
+            ),*/
+          ]),
+          getFieldsRow(<Widget>[
+            SliderPropertyControl(
+              model.theme.chipTheme.elevation ?? 0,
+              (double elevation) =>
+                  _updateChipTheme(chipTheme.copyWith(elevation: elevation)),
+              label: 'Elevation',
+              max: 20,
+              maxWidth: 20,
+              vertical: true,
+            ),
+            SliderPropertyControl(
+              model.theme.chipTheme.pressElevation ?? 8,
+              (double elevation) => _updateChipTheme(
+                  chipTheme.copyWith(pressElevation: elevation)),
+              label: 'pressElevation',
+              max: 20,
+              maxWidth: 20,
+              vertical: true,
+            ),
+          ]),
+          getFieldsRow(<Widget>[
+            ColorSelector(
+              'shadowColor',
+              model.theme.chipTheme.shadowColor,
+              (Color color) =>
+                  _updateChipTheme(chipTheme.copyWith(shadowColor: color)),
+              padding: 2,
+            ),
+            ColorSelector(
+              'selectedShadowColor',
+              model.theme.chipTheme.selectedShadowColor,
+              (Color color) => _updateChipTheme(
+                  chipTheme.copyWith(selectedShadowColor: color)),
+              padding: 2,
+            ),
+          ]),
+          const Divider(),
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            chipTheme.copyWith,
             key: 'chip_textstyle',
             textStyle: chipLabelStyle,
             label: 'Label Style',
             styleName: 'labelStyle',
           ),
-          Divider(),
-          _buildTextStyleControl(
+          const Divider(),
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            chipTheme.copyWith,
             key: 'chip_alternative_textstyle',
             textStyle: secondaryLabelStyle,
             label: 'Secondary Label Style',
@@ -95,9 +155,9 @@ class ChipThemePanel extends StatelessWidget {
                 checked: chipTheme.brightness == Brightness.dark,
                 checkedLabel: 'Dark',
                 direction: Axis.vertical,
-                onChange: (value) => _onBrightnessChanged(
+                onChange: (bool value) => _onBrightnessChanged(
                     value ? Brightness.dark : Brightness.light,
-                    labelStyle: appTextTheme.body1),
+                    labelStyle: appTextTheme.bodyText2),
               ),
               /*Expanded(
                 child: BrightnessSelector(
@@ -105,7 +165,7 @@ class ChipThemePanel extends StatelessWidget {
                   direction: Axis.horizontal,
                   isDark: chipTheme.brightness == Brightness.dark,
                   onBrightnessChanged: (value) => _onBrightnessChanged(value,
-                      labelStyle: appTextTheme.body1),
+                      labelStyle: appTextTheme.bodyText2),
                 ),
               )*/
             ],
@@ -115,56 +175,8 @@ class ChipThemePanel extends StatelessWidget {
     );
   }
 
-  TextStyleControl _buildTextStyleControl({
-    @required String key,
-    @required String label,
-    @required TextStyle textStyle,
-    @required String styleName,
-  }) {
-    return TextStyleControl(
-      label,
-      key: Key(key),
-      style: textStyle,
-      maxFontSize: 32,
-      onColorChanged: (color) =>
-          apply(textStyle.copyWith(color: color), styleName),
-      onSizeChanged: (size) =>
-          apply(textStyle.copyWith(fontSize: size), styleName),
-      onWeightChanged: (isBold) => apply(
-          textStyle.copyWith(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
-          styleName),
-      onFontStyleChanged: (isItalic) => apply(
-          textStyle.copyWith(
-              fontStyle: isItalic ? FontStyle.italic : FontStyle.normal),
-          styleName),
-      onLetterSpacingChanged: (double value) =>
-          apply(textStyle.copyWith(letterSpacing: value), styleName),
-      onLineHeightChanged: (double value) =>
-          apply(textStyle.copyWith(height: value), styleName),
-      onWordSpacingChanged: (double value) =>
-          apply(textStyle.copyWith(wordSpacing: value), styleName),
-      onDecorationChanged: (TextDecoration value) =>
-          apply(textStyle.copyWith(decoration: value), styleName),
-      onDecorationStyleChanged: (TextDecorationStyle value) =>
-          apply(textStyle.copyWith(decorationStyle: value), styleName),
-      onDecorationColorChanged: (Color value) =>
-          apply(textStyle.copyWith(decorationColor: value), styleName),
-    );
-  }
-
-  void apply(TextStyle style, String styleName) {
-    final styleArgs = <Symbol, dynamic>{};
-    styleArgs[Symbol(styleName)] = style;
-
-    final args = <Symbol, dynamic>{};
-    args[Symbol(_themeRef)] =
-        Function.apply(chipTheme.copyWith, null, styleArgs);
-    model.updateTheme(Function.apply(model.theme.copyWith, null, args));
-  }
-
   void _onBrightnessChanged(Brightness value, {TextStyle labelStyle}) {
-    final updatedTheme = model.theme.copyWith(
+    ThemeData updatedTheme = model.theme.copyWith(
         chipTheme: ChipThemeData.fromDefaults(
       brightness: value,
       /*primaryColor: model.theme.primaryColor,*/
@@ -175,7 +187,7 @@ class ChipThemePanel extends StatelessWidget {
   }
 
   _updateChipTheme(ChipThemeData chipTheme) {
-    final updatedTheme = model.theme.copyWith(chipTheme: chipTheme);
+    ThemeData updatedTheme = model.theme.copyWith(chipTheme: chipTheme);
     model.updateTheme(updatedTheme);
   }
 }

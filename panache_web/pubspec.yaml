@@ -8,7 +8,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_sign_in: ^3.2.4
+  googleapis: ^0.52.0+1
+  shared_preferences: ^0.5.3
+  panache_services:
+    path: ../panache_services
 
+    
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -26,3 +32,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/google.png
+    - assets/google-drive.png    

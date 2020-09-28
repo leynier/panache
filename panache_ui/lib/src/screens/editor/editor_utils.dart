@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../help/help.dart';
 import 'controls/brightness_control.dart';
 import 'controls/color_selector.dart';
-
-import '../../help/help.dart';
 
 Widget getFieldsRow(List<Widget> children, {Axis direction: Axis.horizontal}) {
   final isHorizontal = direction == Axis.horizontal;
@@ -68,7 +67,7 @@ class FieldBorder extends StatelessWidget {
   const FieldBorder({
     Key key,
     this.child,
-    this.padding: const EdgeInsets.symmetric(horizontal: 12.0),
+    this.padding: const EdgeInsets.symmetric(horizontal: 12),
   }) : super(key: key);
 
   @override

@@ -7,7 +7,7 @@ enum RGB { R, G, B }
 
 enum HSL { H, S, L }
 
-const materialColorsNames = [
+const List<String> materialColorsNames = <String>[
   "red",
   "pink",
   "purple",
@@ -32,42 +32,47 @@ const materialColorsNames = [
 ];
 
 Color getMaterialColor(String name) => namedColors()
-    .firstWhere((c) => c.name == name,
+    .firstWhere((NamedColor color) => color.name == name,
         orElse: () =>
             NamedColor(name: name, color: Color(int.parse(name, radix: 16))))
     .color;
 
 String getMaterialName(Color color) => namedColors()
-    .firstWhere((c) => c.color.value == color.value,
+    .firstWhere(
+        (NamedColor colorNamed) => colorNamed.color?.value == color?.value,
         orElse: () =>
-            NamedColor(name: color.value.toRadixString(16), color: color))
+            NamedColor(name: color?.value.toRadixString(16), color: color))
     .name;
 
-bool isMaterialPrimary(Color color) =>
-    namedColors().where((c) => c.color.value == color.value).isNotEmpty;
+bool isMaterialPrimary(Color color) => namedColors()
+    .where((NamedColor colorNamed) => colorNamed.color?.value == color?.value)
+    .isNotEmpty;
 
 /// look for the corresponding mmaterialColor or return a generated ColorSwatch
 /// based on the selected color
 ///
-MaterialColor swatchFor({Color color}) =>
-    Colors.primaries.firstWhere((c) => c.value == color.value,
-        orElse: () => newColorSwatch(color));
+MaterialColor swatchFor({Color color}) => Colors.primaries.firstWhere(
+    (MaterialColor matColor) => matColor?.value == color?.value,
+    orElse: () => newColorSwatch(color));
 
 String materialSwatchCodeFor({Color color}) {
   return namedColors()
-          .firstWhere((c) => c.color.value == color.value, orElse: () => null)
+          .firstWhere(
+              (NamedColor namedColor) =>
+                  namedColor.color?.value == color?.value,
+              orElse: () => null)
           ?.toString() ??
       customSwatchCode(color);
 }
 
 String customSwatchCode(Color color) {
-  final shadesCode = getMaterialColorValues(color)
-      .map((int k, Color v) => MapEntry(k, "${colorToCode(v)}\n\t\t"));
-  return "MaterialColor(${color.value},$shadesCode)";
+  Map<int, String> shadesCode = getMaterialColorValues(color).map(
+      (int k, Color v) => MapEntry<int, String>(k, "${colorToCode(v)}\n\t\t"));
+  return "MaterialColor(${color?.value},$shadesCode)";
 }
 
 List<NamedColor> namedColors() {
-  var colors = List<Color>.from(Colors.primaries, growable: true);
+  List<Color> colors = List<Color>.from(Colors.primaries);
   colors.addAll([white, black, grey]);
 
   return colors.fold(
@@ -89,22 +94,22 @@ class NamedColor {
   }
 }
 
-bool isDark(Color c) => (c.red + c.green + c.blue) / 3 >= 146;
+bool isDark(Color color) => (color.red + color.green + color.blue) / 3 >= 146;
 
 Color getContrastColor(Color c, {int limit: 450}) =>
     c.red + c.green + c.blue < limit ? Colors.white : Colors.black;
 
 List<Widget> getMaterialSwatches(ValueChanged<Color> onSelection) {
-  final colors = Colors.primaries.map((c) => c).toList();
+  final colors = Colors.primaries.map((Color color) => color).toList();
   colors.addAll([white, black, grey]);
 
   return colors
-      .map((c) => InkWell(
+      .map((dynamic color) => InkWell(
             child: Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: EdgeInsets.all(4),
                 child: Container(
-                    width: kSwatchSize, height: kSwatchSize, color: c)),
-            onTap: () => onSelection(c),
+                    width: kSwatchSize, height: kSwatchSize, color: color)),
+            onTap: () => onSelection(color),
           ))
       .toList();
 }
@@ -113,9 +118,9 @@ List<Widget> getMaterialSwatches(ValueChanged<Color> onSelection) {
 /// MaterialColor/ColorSwatch from simple color
 ///
 MaterialColor newColorSwatch(Color color, {bool opaque: true}) {
-  final c = opaque ? color.withOpacity(1.0) : color;
-  final swatch = getMaterialColorValues(c);
-  return new MaterialColor(c.value, swatch);
+  //final c = opaque ? color.withOpacity(1) : color;
+  final swatch = getMaterialColorValues(color);
+  return new MaterialColor(color.value, swatch);
 }
 
 ///
@@ -156,10 +161,10 @@ List<Color> getMaterialColorShades(MaterialColor color) => [
     ];
 
 String colorToHex32(Color color) =>
-    '#${color.value.toRadixString(16).padLeft(8, '0')}';
+    '#${color?.value.toRadixString(16).padLeft(8, '0')}';
 
 String colorToInt(Color color) =>
-    '0x${color.value.toRadixString(16).padLeft(8, '0')}';
+    '0x${color?.value.toRadixString(16).padLeft(8, '0')}';
 
 List<Color> getHueGradientColors({int steps: 36}) =>
     List.generate(steps, (value) => value).map<Color>((v) {
@@ -168,62 +173,62 @@ List<Color> getHueGradientColors({int steps: 36}) =>
       return rgb.withOpacity(1);
     }).toList();
 
-Color getMinSaturation(Color c) {
-  final hsl = HSLColor.fromColor(c);
+Color getMinSaturation(Color color) {
+  final hsl = HSLColor.fromColor(color);
   final minS = hsl.withSaturation(0);
   return minS.toColor().withOpacity(1);
 }
 
-Color getMaxSaturation(Color c) =>
-    HSLColor.fromColor(c).withSaturation(1).toColor();
+Color getMaxSaturation(Color color) =>
+    HSLColor.fromColor(color).withSaturation(1).toColor();
 
-const MaterialColor grey = const MaterialColor(
+const MaterialColor grey = MaterialColor(
   _greyPrimaryValue,
-  const <int, Color>{
-    50: const Color(0xFFFAFAFA),
-    100: const Color(0xFFF0F0F0),
-    200: const Color(0xFFEEEEEE),
-    300: const Color(0xFFCCCCCC),
-    400: const Color(0xFFAAAAAA),
-    500: const Color(_greyPrimaryValue),
-    600: const Color(0xFF666666),
-    700: const Color(0xFF404040),
-    800: const Color(0xFF303030),
-    900: const Color(0xFF202020),
+  <int, Color>{
+    50: Color(0xFFFAFAFA),
+    100: Color(0xFFF0F0F0),
+    200: Color(0xFFEEEEEE),
+    300: Color(0xFFCCCCCC),
+    400: Color(0xFFAAAAAA),
+    500: Color(_greyPrimaryValue),
+    600: Color(0xFF666666),
+    700: Color(0xFF404040),
+    800: Color(0xFF303030),
+    900: Color(0xFF202020),
   },
 );
 const int _greyPrimaryValue = 0xFF999999;
 
-const MaterialColor white = const MaterialColor(
+const MaterialColor white = MaterialColor(
   _whitePrimaryValue,
-  const <int, Color>{
-    50: const Color(0xFFFFFFFF),
-    100: const Color(0xFFFFFFFF),
-    200: const Color(0xFFFFFFFF),
-    300: const Color(0xFFFFFFFF),
-    400: const Color(0xFFFFFFFF),
-    500: const Color(_whitePrimaryValue),
-    600: const Color(0xFFFFFFFF),
-    700: const Color(0xFFFFFFFF),
-    800: const Color(0xFFFFFFFF),
-    900: const Color(0xFFFFFFFF),
+  <int, Color>{
+    50: Color(0xFFFFFFFF),
+    100: Color(0xFFFFFFFF),
+    200: Color(0xFFFFFFFF),
+    300: Color(0xFFFFFFFF),
+    400: Color(0xFFFFFFFF),
+    500: Color(_whitePrimaryValue),
+    600: Color(0xFFFFFFFF),
+    700: Color(0xFFFFFFFF),
+    800: Color(0xFFFFFFFF),
+    900: Color(0xFFFFFFFF),
   },
 );
 const int _whitePrimaryValue = 0xFFFFFFFF;
 
-const MaterialColor black = const MaterialColor(
+const MaterialColor black = MaterialColor(
   _blackPrimaryValue,
-  const <int, Color>{
-    50: const Color(0xFF000000),
-    100: const Color(0xFF000000),
-    200: const Color(0xFF000000),
-    300: const Color(0xFF000000),
-    400: const Color(0xFF000000),
-    500: const Color(_blackPrimaryValue),
-    600: const Color(0xFF000000),
-    700: const Color(0xFF000000),
-    800: const Color(0xFF000000),
-    900: const Color(0xFF000000),
+  <int, Color>{
+    50: Color(0xFF000000),
+    100: Color(0xFF000000),
+    200: Color(0xFF000000),
+    300: Color(0xFF000000),
+    400: Color(0xFF000000),
+    500: Color(_blackPrimaryValue),
+    600: Color(0xFF000000),
+    700: Color(0xFF000000),
+    800: Color(0xFF000000),
+    900: Color(0xFF000000),
   },
 );
 const int _blackPrimaryValue = 0xFF000000;

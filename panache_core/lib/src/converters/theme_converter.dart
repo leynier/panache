@@ -2,6 +2,26 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:panache_core/panache_core.dart';
+import 'package:panache_core/src/converters/app_bar_converter.dart';
+import 'package:panache_core/src/converters/bottom_app_bar_converter.dart';
+import 'package:panache_core/src/converters/bottom_navigation_bar_converter.dart';
+import 'package:panache_core/src/converters/bottom_sheet_converter.dart';
+import 'package:panache_core/src/converters/button_bar_converter.dart';
+import 'package:panache_core/src/converters/card_converter.dart';
+import 'package:panache_core/src/converters/chip_theme_converter.dart';
+import 'package:panache_core/src/converters/dialog_converter.dart';
+import 'package:panache_core/src/converters/divider_converter.dart';
+import 'package:panache_core/src/converters/floating_action_button_converter.dart';
+import 'package:panache_core/src/converters/material_banner_converter.dart';
+import 'package:panache_core/src/converters/navigation_rail_converter.dart';
+import 'package:panache_core/src/converters/popup_menu_converter.dart';
+import 'package:panache_core/src/converters/slider_converter.dart';
+import 'package:panache_core/src/converters/snack_bar_converter.dart';
+import 'package:panache_core/src/converters/tab_bar_converter.dart';
+import 'package:panache_core/src/converters/time_picker_converter.dart';
+import 'package:panache_core/src/converters/toggles_buttons_converter.dart';
+import 'package:panache_core/src/converters/tooltip_converter.dart';
 
 import '../utils/color_utils.dart';
 import 'button_theme_converters.dart';
@@ -10,14 +30,15 @@ import 'icon_theme_converter.dart';
 import 'input_theme_converter.dart';
 import 'text_theme_converters.dart';
 
-final defaultLightTheme =
+ThemeData defaultLightTheme =
     ThemeData.localize(ThemeData.light(), Typography.englishLike2018);
 
-final defaultDarkTheme =
+ThemeData defaultDarkTheme =
     ThemeData.localize(ThemeData.dark(), Typography.englishLike2018);
 
 String themeToCode(ThemeData theme) {
-  return '''
+  String themeCode;
+  themeCode = '''
   import 'package:flutter/material.dart';
   final ThemeData myTheme = ThemeData(
     primarySwatch: ${materialSwatchCodeFor(color: theme.primaryColor)},
@@ -49,6 +70,7 @@ String themeToCode(ThemeData theme) {
     indicatorColor: ${colorToCode(theme.indicatorColor)},
     hintColor: ${colorToCode(theme.hintColor)},
     errorColor: ${colorToCode(theme.errorColor)},
+    colorScheme: ${colorSchemeToCode(theme.colorScheme)},
     buttonTheme: ${buttonThemeToCode(theme.buttonTheme)},
     textTheme: ${textThemeToCode(theme.textTheme)},
     primaryTextTheme: ${textThemeToCode(theme.primaryTextTheme)},
@@ -56,7 +78,7 @@ String themeToCode(ThemeData theme) {
     inputDecorationTheme: ${inputDecorationThemeToCode(
     theme.inputDecorationTheme,
     theme.hintColor,
-    theme.textTheme.body1,
+    theme.textTheme.bodyText2,
     theme.brightness,
   )},
     iconTheme: ${iconThemeToCode(theme.iconTheme)},
@@ -64,19 +86,113 @@ String themeToCode(ThemeData theme) {
     accentIconTheme: ${iconThemeToCode(theme.accentIconTheme)},
     sliderTheme: ${sliderThemeToCode(
     theme.sliderTheme,
-    theme.accentTextTheme.body2,
+    theme.accentTextTheme.bodyText1,
   )},
     tabBarTheme: ${tabBarThemeToCode(
     theme.tabBarTheme,
-    defaultLabelColor: theme.primaryTextTheme.body2.color,
+    defaultLabelColor: theme.primaryTextTheme.bodyText1.color,
   )},
     chipTheme: ${chipThemeToCode(
     theme.chipTheme,
-    defaultLabelStyle: theme.textTheme.body2,
+    defaultLabelStyle: theme.textTheme.bodyText1,
   )},
     dialogTheme: ${dialogThemeToCode(theme.dialogTheme)},
-  );
-''';
+
+  ''';
+  if (appBarThemeIsNull(theme.appBarTheme) == false) {
+    themeCode += '''
+    appBarTheme: ${appBarThemeToCode(theme.appBarTheme)},
+    ''';
+  }
+
+  if (bottomAppBarThemeIsNull(theme.bottomAppBarTheme) == false) {
+    themeCode += '''
+    bottomAppBarTheme: ${bottomAppBarThemeToCode(theme.bottomAppBarTheme)},
+    ''';
+  }
+
+  if (bottomNavigationBarThemeIsNull(theme.bottomNavigationBarTheme) == false) {
+    themeCode += '''
+    bottomNavigationBarTheme: ${bottomNavigationBarThemeToCode(theme.bottomNavigationBarTheme)},
+    ''';
+  }
+
+  if (toggleButtonsThemeDataIsNull(theme.toggleButtonsTheme) == false) {
+    themeCode += '''
+    toggleButtonsTheme: ${toggleButtonsThemeToCode(theme.toggleButtonsTheme)},
+    ''';
+  }
+
+  if (cardThemeDataIsNull(theme.cardTheme) == false) {
+    themeCode += '''
+    cardTheme: ${cardThemeToCode(theme.cardTheme)},
+    ''';
+  }
+
+  if (tooltipThemeDataIsNull(theme.tooltipTheme) == false) {
+    themeCode += '''
+    tooltipTheme: ${tooltipThemeToCode(theme.tooltipTheme)},
+    ''';
+  }
+
+  if (snackBarThemeDataIsNull(theme.snackBarTheme) == false) {
+    themeCode += '''
+    snackBarTheme: ${snackBarThemeToCode(theme.snackBarTheme)},
+    ''';
+  }
+
+  if (bottomSheetThemeDataIsNull(theme.bottomSheetTheme) == false) {
+    themeCode += '''
+    bottomSheetTheme: ${bottomSheetThemeToCode(theme.bottomSheetTheme)},
+    ''';
+  }
+  if (popupMenuThemeDataIsNull(theme.popupMenuTheme) == false) {
+    themeCode += '''
+    popupMenuTheme: ${popupMenuThemeToCode(theme.popupMenuTheme)},
+    ''';
+  }
+
+  if (timePickerThemeDataIsNull(theme.timePickerTheme) == false) {
+    themeCode += '''
+    timePickerTheme: ${timePickerThemeToCode(theme.timePickerTheme, theme.hintColor, theme.textTheme.bodyText2, theme.brightness)},
+    ''';
+  }
+
+  if (buttonBarThemeDataIsNull(theme.buttonBarTheme) == false) {
+    themeCode += '''
+    buttonBarTheme: ${buttonBarThemeToCode(theme.buttonBarTheme)},
+    ''';
+  }
+
+  if (floatingActionButtonThemeDataIsNull(theme.floatingActionButtonTheme) ==
+      false) {
+    themeCode += '''
+    floatingActionButtonTheme: ${floatingActionButtonThemeToCode(theme.floatingActionButtonTheme)},
+    ''';
+  }
+
+  if (materialBannerThemeDataIsNull(theme.bannerTheme) == false) {
+    themeCode += '''
+    bannerTheme: ${materialBannerThemeToCode(theme.bannerTheme)},
+    ''';
+  }
+  if (dividerThemeDataIsNull(theme.dividerTheme) == false) {
+    themeCode += '''
+    dividerTheme: ${dividerThemeToCode(theme.dividerTheme)},
+    ''';
+  }
+
+  if (navigationRailThemeDataIsNull(theme.navigationRailTheme) == false) {
+    themeCode += '''
+    navigationRailTheme: ${navigationRailThemeToCode(theme.navigationRailTheme)},
+    ''';
+  }
+
+//Fin de fichier
+  themeCode += '''
+      );
+    ''';
+  return themeCode;
 }
 /*
     TODO
@@ -88,36 +204,38 @@ String themeToCode(ThemeData theme) {
  */
 
 Map<String, dynamic> themeToMap(ThemeData theme) {
-  return <String, dynamic>{
-    "primarySwatch": theme.primaryColor.value,
+  Map<String, dynamic> themeToMap;
+  themeToMap = <String, dynamic>{
+    "primarySwatch": theme.primaryColor?.value,
     'brightness': brightnessIndex(theme.brightness),
-    'primaryColor': theme.primaryColor.value,
+    'primaryColor': theme.primaryColor?.value,
     'primaryColorBrightness': brightnessIndex(theme.primaryColorBrightness),
     'primaryColorLight': theme.primaryColorLight.value,
     'primaryColorDark': theme.primaryColorDark.value,
-    'accentColor': theme.accentColor.value,
+    'accentColor': theme.accentColor?.value,
     'accentColorBrightness': brightnessIndex(theme.accentColorBrightness),
-    'canvasColor': theme.canvasColor.value,
-    'scaffoldBackgroundColor': theme.scaffoldBackgroundColor.value,
-    'bottomAppBarColor': theme.bottomAppBarColor.value,
-    'cardColor': theme.cardColor.value,
-    'dividerColor': theme.dividerColor.value,
-    'highlightColor': theme.highlightColor.value,
-    'splashColor': theme.splashColor.value,
-    'selectedRowColor': theme.selectedRowColor.value,
-    'unselectedWidgetColor': theme.unselectedWidgetColor.value,
-    'disabledColor': theme.disabledColor.value,
-    'buttonColor': theme.buttonColor.value,
-    'toggleableActiveColor': theme.toggleableActiveColor.value,
-    'secondaryHeaderColor': theme.secondaryHeaderColor.value,
-    'textSelectionColor': theme.textSelectionColor.value,
-    'cursorColor': theme.cursorColor.value,
-    'textSelectionHandleColor': theme.textSelectionHandleColor.value,
-    'backgroundColor': theme.backgroundColor.value,
-    'dialogBackgroundColor': theme.dialogBackgroundColor.value,
-    'indicatorColor': theme.indicatorColor.value,
-    'hintColor': theme.hintColor.value,
-    'errorColor': theme.errorColor.value,
+    'canvasColor': theme.canvasColor?.value,
+    'scaffoldBackgroundColor': theme.scaffoldBackgroundColor?.value,
+    'bottomAppBarColor': theme.bottomAppBarColor?.value,
+    'cardColor': theme.cardColor?.value,
+    'dividerColor': theme.dividerColor?.value,
+    'highlightColor': theme.highlightColor?.value,
+    'splashColor': theme.splashColor?.value,
+    'selectedRowColor': theme.selectedRowColor?.value,
+    'unselectedWidgetColor': theme.unselectedWidgetColor?.value,
+    'disabledColor': theme.disabledColor?.value,
+    'buttonColor': theme.buttonColor?.value,
+    'toggleableActiveColor': theme.toggleableActiveColor?.value,
+    'secondaryHeaderColor': theme.secondaryHeaderColor?.value,
+    'textSelectionColor': theme.textSelectionColor?.value,
+    'cursorColor': theme.cursorColor?.value,
+    'textSelectionHandleColor': theme.textSelectionHandleColor?.value,
+    'backgroundColor': theme.backgroundColor?.value,
+    'dialogBackgroundColor': theme.dialogBackgroundColor?.value,
+    'indicatorColor': theme.indicatorColor?.value,
+    'hintColor': theme.hintColor?.value,
+    'errorColor': theme.errorColor?.value,
+    'colorScheme': colorSchemeToMap(theme.colorScheme),
     'buttonTheme': buttonThemeToMap(theme.buttonTheme),
     'textTheme': textThemeToMap(theme.textTheme),
     'primaryTextTheme': textThemeToMap(theme.primaryTextTheme),
@@ -125,30 +243,137 @@ Map<String, dynamic> themeToMap(ThemeData theme) {
     'inputDecorationTheme': inputDecorationThemeToMap(
         theme.inputDecorationTheme,
         theme.hintColor,
-        theme.textTheme.body1,
+        theme.textTheme.bodyText2,
         theme.brightness),
     'iconTheme': iconThemeToMap(theme.iconTheme),
     'primaryIconTheme': iconThemeToMap(theme.primaryIconTheme),
     'accentIconTheme': iconThemeToMap(theme.accentIconTheme),
-    /* FIXME'sliderTheme':
-        sliderThemeToMap(theme.sliderTheme, theme.accentTextTheme.body2),*/
+    'sliderTheme':
+        sliderThemeToMap(theme.sliderTheme, theme.accentTextTheme.bodyText1),
     'tabBarTheme': tabBarThemeToMap(theme.tabBarTheme,
-        defaultLabelColor: theme.primaryTextTheme.body2.color),
+        defaultLabelColor: theme.primaryTextTheme.bodyText1.color),
     'chipTheme': chipThemeToMap(
       theme.chipTheme,
-      defaultLabelStyle: theme.textTheme.body2,
+      defaultLabelStyle: theme.textTheme.bodyText1,
     ),
     'dialogTheme': dialogThemeToMap(theme.dialogTheme),
   };
+  //AppBarTheme not initialized with default values
+  //https://api.flutter.dev/flutter/material/ThemeData-class.html
+  //https://api.flutter.dev/flutter/material/AppBarTheme-class.html
+  //https://api.flutter.dev/flutter/material/AppBar/textTheme.html
+  if (appBarThemeIsNull(theme.appBarTheme) == false) {
+    themeToMap.update(
+        'appBarTheme', (value) => appBarThemeToMap(theme.appBarTheme),
+        ifAbsent: () => appBarThemeToMap(theme.appBarTheme));
+  }
+  //https://api.flutter.dev/flutter/material/BottomAppBarTheme-class.html
+  if (bottomAppBarThemeIsNull(theme.bottomAppBarTheme) == false) {
+    themeToMap.update('bottomAppBarTheme',
+        (dynamic value) => bottomAppBarThemeToMap(theme.bottomAppBarTheme),
+        ifAbsent: () => bottomAppBarThemeToMap(theme.bottomAppBarTheme));
+  }
+
+  if (bottomNavigationBarThemeIsNull(theme.bottomNavigationBarTheme) == false) {
+    themeToMap.update(
+        'bottomNavigationBarTheme',
+        (dynamic value) =>
+            bottomNavigationBarThemeToMap(theme.bottomNavigationBarTheme),
+        ifAbsent: () =>
+            bottomNavigationBarThemeToMap(theme.bottomNavigationBarTheme));
+  }
+
+  if (toggleButtonsThemeDataIsNull(theme.toggleButtonsTheme) == false) {
+    themeToMap.update('toggleButtonsTheme',
+        (dynamic value) => toggleButtonsThemeToMap(theme.toggleButtonsTheme),
+        ifAbsent: () => toggleButtonsThemeToMap(theme.toggleButtonsTheme));
+  }
+
+  if (cardThemeDataIsNull(theme.cardTheme) == false) {
+    themeToMap.update(
+        'cardTheme', (dynamic value) => cardThemeToMap(theme.cardTheme),
+        ifAbsent: () => cardThemeToMap(theme.cardTheme));
+  }
+
+  if (tooltipThemeDataIsNull(theme.tooltipTheme) == false) {
+    themeToMap.update('tooltipTheme',
+        (dynamic value) => tooltipThemeToMap(theme.tooltipTheme),
+        ifAbsent: () => tooltipThemeToMap(theme.tooltipTheme));
+  }
+
+  if (snackBarThemeDataIsNull(theme.snackBarTheme) == false) {
+    themeToMap.update('snackBarTheme',
+        (dynamic value) => snackBarThemeToMap(theme.snackBarTheme),
+        ifAbsent: () => snackBarThemeToMap(theme.snackBarTheme));
+  }
+
+  if (bottomSheetThemeDataIsNull(theme.bottomSheetTheme) == false) {
+    themeToMap.update('bottomSheetTheme',
+        (dynamic value) => bottomSheetThemeToMap(theme.bottomSheetTheme),
+        ifAbsent: () => bottomSheetThemeToMap(theme.bottomSheetTheme));
+  }
+
+  if (popupMenuThemeDataIsNull(theme.popupMenuTheme) == false) {
+    themeToMap.update('popupMenuTheme',
+        (dynamic value) => popupMenuThemeToMap(theme.popupMenuTheme),
+        ifAbsent: () => popupMenuThemeToMap(theme.popupMenuTheme));
+  }
+
+  if (timePickerThemeDataIsNull(theme.timePickerTheme) == false) {
+    themeToMap.update(
+        'timePickerTheme',
+        (dynamic value) => timePickerThemeToMap(theme.timePickerTheme,
+            theme.hintColor, theme.textTheme.bodyText2, theme.brightness),
+        ifAbsent: () => timePickerThemeToMap(theme.timePickerTheme,
+            theme.hintColor, theme.textTheme.bodyText2, theme.brightness));
+  }
+
+  if (buttonBarThemeDataIsNull(theme.buttonBarTheme) == false) {
+    themeToMap.update('buttonBarTheme',
+        (dynamic value) => buttonBarThemeToMap(theme.buttonBarTheme),
+        ifAbsent: () => buttonBarThemeToMap(theme.buttonBarTheme));
+  }
+
+  if (floatingActionButtonThemeDataIsNull(theme.floatingActionButtonTheme) ==
+      false) {
+    themeToMap.update(
+        'floatingActionButtonTheme',
+        (dynamic value) =>
+            floatingActionButtonThemeToMap(theme.floatingActionButtonTheme),
+        ifAbsent: () =>
+            floatingActionButtonThemeToMap(theme.floatingActionButtonTheme));
+  }
+
+  if (materialBannerThemeDataIsNull(theme.bannerTheme) == false) {
+    themeToMap.update('bannerTheme',
+        (dynamic value) => materialBannerThemeToMap(theme.bannerTheme),
+        ifAbsent: () => materialBannerThemeToMap(theme.bannerTheme));
+  }
+
+  if (dividerThemeDataIsNull(theme.dividerTheme) == false) {
+    themeToMap.update('dividerTheme',
+        (dynamic value) => dividerThemeToMap(theme.dividerTheme),
+        ifAbsent: () => dividerThemeToMap(theme.dividerTheme));
+  }
+
+  if (navigationRailThemeDataIsNull(theme.navigationRailTheme) == false) {
+    themeToMap.update('navigationRailTheme',
+        (dynamic value) => navigationRailThemeToMap(theme.navigationRailTheme),
+        ifAbsent: () => navigationRailThemeToMap(theme.navigationRailTheme));
+  }
+
+  return themeToMap;
 }
 
 ThemeData themeFromJson(String jsonTheme) {
-  final defaultTheme = ThemeData.light();
-  final Map<String, dynamic> themeMap = json.decode(jsonTheme);
-  final defaultColor = Colors.cyan;
-  return ThemeData(
+  ThemeData defaultTheme = ThemeData.light();
+  Map<String, dynamic> themeMap = json.decode(jsonTheme);
+  MaterialColor defaultColor = Colors.cyan;
+
+  ThemeData theme;
+  theme = ThemeData(
     primarySwatch: swatchFor(
-        color: Color(themeMap['primarySwatch'] ?? defaultColor.value)),
+        color: Color(themeMap['primarySwatch'] ?? defaultColor?.value)),
     brightness:
         Brightness.values[max(Brightness.light.index, themeMap['brightness'])],
     primaryColor: Color(themeMap['primaryColor'] ?? defaultColor),
@@ -160,14 +385,14 @@ ThemeData themeFromJson(String jsonTheme) {
     primaryColorDark: Color(
         themeMap['primaryColorDark'] ?? defaultTheme.primaryColorDark.value),
     accentColor:
-        Color(themeMap['accentColor'] ?? defaultTheme.accentColor.value),
+        Color(themeMap['accentColor'] ?? defaultTheme.accentColor?.value),
     accentColorBrightness: Brightness.values[max(
         defaultTheme.accentColorBrightness.index,
         themeMap['accentColorBrightness'])],
     canvasColor:
-        Color(themeMap['canvasColor'] ?? defaultTheme.canvasColor.value),
+        Color(themeMap['canvasColor'] ?? defaultTheme.canvasColor?.value),
     scaffoldBackgroundColor: Color(themeMap['scaffoldBackgroundColor'] ??
-        defaultTheme.scaffoldBackgroundColor.value),
+        defaultTheme.scaffoldBackgroundColor?.value),
     bottomAppBarColor:
         Color(themeMap['bottomAppBarColor'] ?? defaultTheme.bottomAppBarColor),
     cardColor: Color(themeMap['cardColor'] ?? defaultTheme.cardColor),
@@ -217,17 +442,56 @@ ThemeData themeFromJson(String jsonTheme) {
         sliderThemeFromMap(themeMap['sliderTheme']) ?? defaultTheme.sliderTheme,
     tabBarTheme:
         tabBarThemeFromMap(themeMap['tabBarTheme']) ?? defaultTheme.tabBarTheme,
-    chipTheme:
-        chipThemeFromMap(themeMap['chipTheme']) ?? defaultTheme.chipTheme,
+    chipTheme: chipThemeFromMap(themeMap['chipTheme'],
+            brightness: Brightness
+                .values[max(Brightness.light.index, themeMap['brightness'])],
+            secondaryColor: defaultTheme.primaryColor,
+            labelStyle: defaultTheme.chipTheme.labelStyle) ??
+        defaultTheme.chipTheme,
     inputDecorationTheme:
         inputDecorationThemeFromMap(themeMap['inputDecorationTheme']) ??
             defaultTheme.inputDecorationTheme,
     dialogTheme:
         dialogThemeFromMap(themeMap['dialogTheme']) ?? defaultTheme.textTheme,
-    /*FIXME
-    *  */
+    appBarTheme:
+        appBarThemeFromMap(themeMap['appBarTheme']) ?? defaultTheme.appBarTheme,
     platform: defaultTheme.platform,
-    colorScheme: defaultLightTheme.colorScheme,
+    colorScheme: colorSchemeFromMap(themeMap['colorScheme']) ??
+        defaultLightTheme.colorScheme,
+    bottomAppBarTheme:
+        bottomAppBarThemeFromMap(themeMap['bottomAppBarTheme']) ??
+            defaultLightTheme.bottomAppBarTheme,
+    bottomNavigationBarTheme:
+        bottomNavigationBarThemeFromMap(themeMap['bottomNavigationBarTheme']) ??
+            defaultLightTheme.bottomNavigationBarTheme,
+    toggleButtonsTheme:
+        toggleButtonsThemeFromMap(themeMap['toggleButtonsTheme']) ??
+            defaultLightTheme.toggleButtonsTheme,
+    cardTheme:
+        cardThemeFromMap(themeMap['cardTheme']) ?? defaultLightTheme.cardTheme,
+    tooltipTheme: tooltipThemeFromMap(themeMap['tooltipTheme']) ??
+        defaultLightTheme.tooltipTheme,
+    snackBarTheme: snackBarhemeFromMap(themeMap['snackBarTheme']) ??
+        defaultLightTheme.snackBarTheme,
+    bottomSheetTheme: bottomSheetThemeFromMap(themeMap['bottomSheetTheme']) ??
+        defaultLightTheme.bottomSheetTheme,
+    popupMenuTheme: popupMenuThemeFromMap(themeMap['popupMenuTheme']) ??
+        defaultLightTheme.popupMenuTheme,
+    timePickerTheme: timePickerThemeFromMap(themeMap['timePickerTheme']) ??
+        defaultLightTheme.timePickerTheme,
+    buttonBarTheme: buttonBarThemeFromMap(themeMap['buttonBarTheme']) ??
+        defaultLightTheme.buttonBarTheme,
+    floatingActionButtonTheme: floatingActionButtonThemeFromMap(
+            themeMap['floatingActionButtonTheme']) ??
+        defaultLightTheme.floatingActionButtonTheme,
+    bannerTheme: materialBannerThemeFromMap(themeMap['bannerTheme']) ??
+        defaultLightTheme.bannerTheme,
+    dividerTheme: dividerThemeFromMap(themeMap['dividerTheme']) ??
+        defaultLightTheme.dividerTheme,
+    navigationRailTheme:
+        navigationRailThemeFromMap(themeMap['navigationRailTheme']) ??
+            defaultLightTheme.navigationRailTheme,
+
     /*
     fontFamily:
     pageTransitionsTheme:
@@ -236,201 +500,12 @@ ThemeData themeFromJson(String jsonTheme) {
     typography:
     */
   );
+
+  return theme;
 }
 
 int brightnessIndex(Brightness value) =>
     max(0, Brightness.values.indexOf(value));
 
-String sliderThemeToCode(
-    SliderThemeData sliderTheme, TextStyle defaultValueIndicatorStyle) {
-  return '''SliderThemeData(
-      activeTrackColor: ${colorToCode(sliderTheme.activeTrackColor)},
-      inactiveTrackColor: ${colorToCode(sliderTheme.inactiveTrackColor)},
-      disabledActiveTrackColor: ${colorToCode(sliderTheme.disabledActiveTrackColor)},
-      disabledInactiveTrackColor: ${colorToCode(sliderTheme.disabledInactiveTrackColor)},
-      activeTickMarkColor: ${colorToCode(sliderTheme.activeTickMarkColor)},
-      inactiveTickMarkColor: ${colorToCode(sliderTheme.inactiveTickMarkColor)},
-      disabledActiveTickMarkColor: ${colorToCode(sliderTheme.disabledActiveTickMarkColor)},
-      disabledInactiveTickMarkColor: ${colorToCode(sliderTheme.disabledInactiveTickMarkColor)},
-      thumbColor: ${colorToCode(sliderTheme.thumbColor)},
-      disabledThumbColor: ${colorToCode(sliderTheme.disabledThumbColor)},
-      thumbShape: ${instanceToCode(sliderTheme.thumbShape)},
-      overlayColor: ${colorToCode(sliderTheme.overlayColor)},
-      valueIndicatorColor: ${colorToCode(sliderTheme.valueIndicatorColor)},
-      valueIndicatorShape: ${instanceToCode(sliderTheme.valueIndicatorShape)},
-      showValueIndicator: ${sliderTheme.showValueIndicator},
-      valueIndicatorTextStyle: ${textStyleToCode(defaultValueIndicatorStyle.merge(sliderTheme.valueIndicatorTextStyle))},
-    )''';
-}
-
-Map<String, dynamic> sliderThemeToMap(
-    SliderThemeData sliderTheme, TextStyle defaultValueIndicatorStyle) {
-  return <String, dynamic>{
-    'activeTrackColor': sliderTheme.activeTrackColor.value,
-    'inactiveTrackColor': sliderTheme.inactiveTrackColor.value,
-    'disabledActiveTrackColor': sliderTheme.disabledActiveTrackColor.value,
-    'disabledInactiveTrackColor': sliderTheme.disabledInactiveTrackColor.value,
-    'activeTickMarkColor': sliderTheme.activeTickMarkColor.value,
-    'inactiveTickMarkColor': sliderTheme.inactiveTickMarkColor.value,
-    'disabledActiveTickMarkColor':
-        sliderTheme.disabledActiveTickMarkColor.value,
-    'disabledInactiveTickMarkColor':
-        sliderTheme.disabledInactiveTickMarkColor.value,
-    'thumbColor': sliderTheme.thumbColor.value,
-    'disabledThumbColor': sliderTheme.disabledThumbColor.value,
-    'thumbShape': {'type': 'RoundSliderThumbShape'},
-    'overlayColor': sliderTheme.overlayColor.value,
-    'valueIndicatorColor': sliderTheme.valueIndicatorColor.value,
-    'valueIndicatorShape': {'type': 'PaddleSliderValueIndicatorShape'},
-    'showValueIndicator': max(
-        0, ShowValueIndicator.values.indexOf(sliderTheme.showValueIndicator)),
-    'valueIndicatorTextStyle': textStyleToMap(
-        defaultValueIndicatorStyle.merge(sliderTheme.valueIndicatorTextStyle)),
-  };
-}
-
-SliderThemeData sliderThemeFromMap(Map<String, dynamic> data) {
-  if (data == null) return null;
-
-  return SliderThemeData(
-    activeTrackColor: Color(data['activeTrackColor']),
-    inactiveTrackColor: Color(data['inactiveTrackColor']),
-    disabledActiveTrackColor: Color(data['disabledActiveTrackColor']),
-    disabledInactiveTrackColor: Color(data['disabledInactiveTrackColor']),
-    activeTickMarkColor: Color(data['activeTickMarkColor']),
-    inactiveTickMarkColor: Color(data['inactiveTickMarkColor']),
-    disabledActiveTickMarkColor: Color(data['disabledActiveTickMarkColor']),
-    disabledInactiveTickMarkColor: Color(data['disabledInactiveTickMarkColor']),
-    thumbColor: Color(data['thumbColor']),
-    disabledThumbColor: Color(data['disabledThumbColor']),
-    thumbShape: RoundSliderThumbShape(),
-    overlayColor: Color(data['overlayColor']),
-    valueIndicatorColor: Color(data['valueIndicatorColor']),
-    valueIndicatorShape: PaddleSliderValueIndicatorShape(),
-    showValueIndicator:
-        ShowValueIndicator.values[max(0, data['showValueIndicator'])],
-    valueIndicatorTextStyle: textStyleFromMap(data['valueIndicatorTextStyle']),
-  );
-}
-
 String instanceToCode(dynamic instance) =>
-    '$instance()'.replaceAll('Instance of \'', '').replaceAll('\'', '');
-
-String dialogThemeToCode(DialogTheme iconTheme) {
-  return '''DialogTheme(
-      shape: ${buttonShapeToCode(iconTheme.shape ?? RoundedRectangleBorder())}
-    )''';
-}
-
-Map<String, dynamic> dialogThemeToMap(DialogTheme iconTheme) =>
-    {'shape': buttonShapeToMap(iconTheme.shape ?? RoundedRectangleBorder())};
-
-DialogTheme dialogThemeFromMap(Map<String, dynamic> data) =>
-    data == null ? null : DialogTheme(shape: buttonShapeFromMap(data));
-
-/// TODO indicator Decoration
-String tabBarThemeToCode(TabBarTheme tabBarTheme,
-    {@required Color defaultLabelColor}) {
-  final selectedColor = tabBarTheme.labelColor ?? defaultLabelColor;
-  final unselectedColor =
-      tabBarTheme.unselectedLabelColor ?? selectedColor.withAlpha(0xB2);
-  return '''TabBarTheme(
-      indicatorSize: ${tabBarTheme.indicatorSize ?? TabBarIndicatorSize.tab},
-      labelColor: ${colorToCode(selectedColor)},
-      unselectedLabelColor: ${colorToCode(unselectedColor)},
-    )''';
-}
-
-/// TODO indicator Decoration
-Map<String, dynamic> tabBarThemeToMap(TabBarTheme tabBarTheme,
-    {@required Color defaultLabelColor}) {
-  final selectedColor = tabBarTheme.labelColor ?? defaultLabelColor;
-  final unselectedColor =
-      tabBarTheme.unselectedLabelColor ?? selectedColor.withAlpha(0xB2);
-  return {
-    'indicatorSize':
-        max(0, TabBarIndicatorSize.values.indexOf(tabBarTheme.indicatorSize)),
-    'labelColor': selectedColor.value,
-    'unselectedLabelColor': unselectedColor.value,
-  };
-}
-
-TabBarTheme tabBarThemeFromMap(Map<String, dynamic> data) {
-  if (data == null) return null;
-
-  return TabBarTheme(
-    indicatorSize:
-        TabBarIndicatorSize.values[max(0, data['indicatorSize'] ?? 0)],
-    labelColor: Color(data['labelColor']),
-    unselectedLabelColor: Color(data['unselectedLabelColor']),
-  );
-}
-
-String chipThemeToCode(ChipThemeData chipTheme,
-    {@required TextStyle defaultLabelStyle}) {
-  return '''ChipThemeData(
-      backgroundColor: ${colorToCode(chipTheme.backgroundColor)},
-      brightness: ${chipTheme.brightness},
-      deleteIconColor: ${colorToCode(chipTheme.deleteIconColor)},
-      disabledColor: ${colorToCode(chipTheme.disabledColor)},
-      labelPadding: ${paddingToCode(chipTheme.labelPadding)},
-      labelStyle: ${textStyleToCode(
-    defaultLabelStyle.merge(chipTheme.labelStyle),
-  )},
-      padding: ${paddingToCode(chipTheme.padding)},
-      secondaryLabelStyle: ${textStyleToCode(
-    defaultLabelStyle.merge(
-      chipTheme.labelStyle.copyWith(color: chipTheme.selectedColor),
-    ),
-  )},
-      secondarySelectedColor: ${colorToCode(chipTheme.secondarySelectedColor)},
-      selectedColor: ${colorToCode(chipTheme.selectedColor)},
-      shape: ${buttonShapeToCode(chipTheme.shape)},
-    )''';
-}
-
-Map<String, dynamic> chipThemeToMap(ChipThemeData chipTheme,
-    {@required TextStyle defaultLabelStyle}) {
-  return {
-    'backgroundColor': chipTheme.backgroundColor.value,
-    'brightness': max(0, Brightness.values.indexOf(chipTheme.brightness)),
-    'deleteIconColor': chipTheme.deleteIconColor.value,
-    'disabledColor': chipTheme.disabledColor.value,
-    'labelPadding': paddingToMap(chipTheme.labelPadding),
-    'labelStyle': textStyleToMap(
-      defaultLabelStyle.merge(chipTheme.labelStyle),
-    ),
-    'padding': paddingToMap(chipTheme.padding),
-    'secondaryLabelStyle': textStyleToMap(defaultLabelStyle
-        .merge(chipTheme.labelStyle.copyWith(color: chipTheme.selectedColor))),
-    'secondarySelectedColor': chipTheme.secondarySelectedColor.value,
-    'selectedColor': chipTheme.selectedColor.value,
-    'shape': buttonShapeToMap(chipTheme.shape),
-  };
-}
-
-ChipThemeData chipThemeFromMap(Map<String, dynamic> data) {
-  if (data == null) return null;
-  return ChipThemeData(
-    backgroundColor: Color(data['backgroundColor']),
-    brightness: Brightness.values[max(0, data['brightness'])],
-    deleteIconColor: Color(data['deleteIconColor']),
-    disabledColor: Color(data['disabledColor']),
-    labelPadding: paddingFromMap(data['labelPadding']),
-    labelStyle: textStyleFromMap(data['labelStyle']),
-    padding: paddingFromMap(data['padding']),
-    secondaryLabelStyle: textStyleFromMap(data['secondaryLabelStyle']),
-    secondarySelectedColor: Color(data['secondarySelectedColor']),
-    selectedColor: Color(data['selectedColor']),
-    shape: buttonShapeFromMap(data['shape']),
-  );
-}
-
-String getChipShapeBorderType(ShapeBorder border) {
-  if (border is RoundedRectangleBorder) return 'RoundedRectangleBorder';
-  if (border is StadiumBorder) return 'StadiumBorder';
-  if (border is CircleBorder) return 'CircleBorder';
-  if (border is BeveledRectangleBorder) return 'BeveledRectangleBorder';
-
-  return 'RoundedRectangleBorder';
-}
+    '$instance()'.replaceAll("Instance of '", '').replaceAll("'", "");

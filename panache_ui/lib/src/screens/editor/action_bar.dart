@@ -5,13 +5,15 @@ import 'controls/brightness_control.dart';
 import 'controls/color_selector.dart';
 
 class GlobalThemePropertiesControl extends StatelessWidget {
+  const GlobalThemePropertiesControl({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final model = ThemeModel.of(context);
 
     final isDark = model.theme.brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -19,7 +21,8 @@ class GlobalThemePropertiesControl extends StatelessWidget {
             child: ColorSelector(
               'Primary swatch',
               model.theme.primaryColor,
-              (color) => _onSwatchSelection(model, swatchFor(color: color)),
+              (Color color) =>
+                  _onSwatchSelection(model, swatchFor(color: color)),
               padding: 0,
             ),
           ),
@@ -35,7 +38,7 @@ class GlobalThemePropertiesControl extends StatelessWidget {
   }
 
   void _onBrightnessChanged(ThemeModel model, Brightness brightness) =>
-      model.updateTheme(ThemeData.localize(
+      model.loadThemeByBrightness(ThemeData.localize(
         ThemeData(
           primarySwatch:
               model.primarySwatch ?? swatchFor(color: model.theme.primaryColor),

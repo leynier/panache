@@ -9,7 +9,7 @@ class HelpButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.help),
+      icon: const Icon(Icons.help),
       color: Colors.blueGrey.shade300,
       onPressed: () => showHelp(
         context,
@@ -20,13 +20,13 @@ class HelpButton extends StatelessWidget {
   }
 
   showHelp(BuildContext context, {String content, String title}) {
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     showDialog(
       context: context,
-      builder: (context) => SimpleDialog(
+      builder: (BuildContext context) => SimpleDialog(
         title: Text(title),
         contentPadding: const EdgeInsets.all(24),
-        children: [Text(content, style: textTheme.subhead)],
+        children: [Text(content, style: textTheme.subtitle1)],
       ),
     );
   }

@@ -21,7 +21,7 @@ class ThemeCodePreview extends StatelessWidget {
       child: SingleChildScrollView(
         child: RichText(
           text: TextSpan(
-              style: const TextStyle(fontSize: 12.0),
+              style: const TextStyle(fontSize: 12),
               children: <TextSpan>[DartSyntaxHighlighter(style).format(code)]),
         ),
       ),

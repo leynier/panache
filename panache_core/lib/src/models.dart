@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:panache_core/panache_core.dart';
 
 import 'utils/color_utils.dart';
 
@@ -39,7 +40,7 @@ class PanacheTheme {
       'id': id,
       'name': name,
       'primarySwatch': primarySwatch.value,
-      'brightness': Brightness.values.indexOf(brightness),
+      'brightness': brightnessIndex(brightness),
     };
     return json.encode(data);
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
 
@@ -10,13 +11,15 @@ class ColorSwatchControl extends StatelessWidget {
   final ValueChanged<Color> onSelection;
 
   String get label {
-    final namedPeer = namedColors().where((c) => c.color.value == color.value);
-    return namedPeer.length > 0
+    Iterable<NamedColor> namedPeer = namedColors().where(
+        (NamedColor namedColor) => namedColor.color?.value == color?.value);
+    return namedPeer.isNotEmpty
         ? namedPeer.first.name
-        : "#${color.value.toRadixString(16)}";
+        : "#${color?.value.toRadixString(16)}";
   }
 
-  ColorSwatchControl({this.color, this.onSelection});
+  const ColorSwatchControl({this.color, this.onSelection, Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => InkWell(
@@ -24,10 +27,19 @@ class ColorSwatchControl extends StatelessWidget {
           ? () => showColorPicker(
               context: context, onColor: onSelection, currentColor: color)
           : null
-      /*openColorMenu(context, onSelection: onSelection, color: color)*/,
+      /*openColorMenu(BuildContext context, onSelection: onSelection, color: color)*/,
       child: Container(
         width: kSwatchSize,
         height: kSwatchSize,
-        decoration: BoxDecoration(color: color),
+        decoration: BoxDecoration(
+            color: color ?? Colors.black, border: Border.all(width: 0.5)),
       ));
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('color', color));
+    properties.add(
+        ObjectFlagProperty<Function(Color)>.has('onSelection', onSelection));
+    properties.add(StringProperty('label', label));
+  }
 }

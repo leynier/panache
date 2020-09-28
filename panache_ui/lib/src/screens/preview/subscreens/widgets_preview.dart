@@ -10,86 +10,86 @@ class ButtonPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: ListView(
         children: [
           Text(
             'RaisedButton',
-            style: theme.textTheme.subhead,
+            style: theme.textTheme.subtitle1,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Wrap(
-              spacing: 8.0,
+              spacing: 8,
               children: [
                 RaisedButton(
                   onPressed: () => Scaffold.of(context)
                       .showSnackBar(SnackBar(content: Text('Snack bar'))),
-                  child: Text("A button"),
+                  child: const Text("A button"),
                 ),
                 RaisedButton.icon(
                   onPressed: () {},
-                  icon: Icon(Icons.add_box),
-                  label: Text('RaisedButton.icon'),
+                  icon: const Icon(Icons.add_box),
+                  label: const Text('RaisedButton.icon'),
                 ),
-                RaisedButton(onPressed: null, child: Text("Disabled")),
+                const RaisedButton(onPressed: null, child: Text("Disabled")),
                 RaisedButton.icon(
                   onPressed: null,
-                  icon: Icon(Icons.add_box),
-                  label: Text('Disabled with icon'),
+                  icon: const Icon(Icons.add_box),
+                  label: const Text('Disabled with icon'),
                 ),
               ],
             ),
           ),
-          Divider(),
-          Text('OutlineButton'),
+          const Divider(),
+          const Text('OutlineButton'),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Wrap(
-              spacing: 8.0,
+              spacing: 8,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                OutlineButton(onPressed: () {}, child: Text("A button")),
+                OutlineButton(onPressed: () {}, child: const Text("A button")),
                 OutlineButton.icon(
                   onPressed: () {},
-                  icon: Icon(Icons.add_box),
-                  label: Text('OutlineButton.icon'),
+                  icon: const Icon(Icons.add_box),
+                  label: const Text('OutlineButton.icon'),
                 ),
-                OutlineButton(onPressed: null, child: Text("Disabled")),
+                const OutlineButton(onPressed: null, child: Text("Disabled")),
                 OutlineButton.icon(
                   onPressed: () {},
-                  icon: Icon(Icons.add_box),
-                  label: Text('Disabled with icon icon'),
+                  icon: const Icon(Icons.add_box),
+                  label: const Text('Disabled with icon icon'),
                 ),
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Expanded(
                 child: Text(
                   'IconButton',
-                  style: theme.textTheme.subhead,
+                  style: theme.textTheme.subtitle1,
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.save),
+                icon: const Icon(Icons.save),
                 onPressed: () {},
               ),
               Text('Enabled', style: theme.textTheme.caption),
-              IconButton(icon: Icon(Icons.style), onPressed: null),
+              const IconButton(icon: Icon(Icons.style), onPressed: null),
               Text(
                 'Disabled',
                 style: theme.textTheme.caption,
               ),
             ],
           ),
-          Divider(),
+          const Divider(),
           Row(
             children: <Widget>[
-              Expanded(
+              const Expanded(
                 child: Text('Dropdown'),
               ),
               DropdownButton(
@@ -99,23 +99,23 @@ class ButtonPreview extends StatelessWidget {
                   onChanged: (value) => print('dropdown value $value')),
             ],
           ),
-          Divider(),
-          Text('FlatButton', style: theme.textTheme.subhead),
+          const Divider(),
+          Text('FlatButton', style: theme.textTheme.subtitle1),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Wrap(
               children: [
-                FlatButton(onPressed: () {}, child: Text("Enabled")),
-                FlatButton(onPressed: null, child: Text('Disabled')),
+                FlatButton(onPressed: () {}, child: const Text("Enabled")),
+                const FlatButton(onPressed: null, child: Text('Disabled')),
                 FlatButton.icon(
-                  icon: Icon(Icons.restore_from_trash),
+                  icon: const Icon(Icons.restore_from_trash),
                   onPressed: () {},
-                  label: Text('FlatButton.icon'),
+                  label: const Text('FlatButton.icon'),
                 ),
                 FlatButton.icon(
-                  icon: Icon(Icons.restore_from_trash),
+                  icon: const Icon(Icons.restore_from_trash),
                   onPressed: null,
-                  label: Text('Disabled.icon'),
+                  label: const Text('Disabled.icon'),
                 ),
               ],
             ),
@@ -133,15 +133,15 @@ class WidgetPreview1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final bodyStyle = textTheme.body2.copyWith(fontSize: 12);
+    ThemeData theme = Theme.of(context);
+    TextTheme textTheme = theme.textTheme;
+    TextStyle bodyStyle = textTheme.bodyText1.copyWith(fontSize: 12);
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: ListView(
         children: [
           Container(
-            padding: EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
                 color: theme.primaryColorDark,
                 borderRadius: BorderRadius.circular(4)),
@@ -149,12 +149,12 @@ class WidgetPreview1 extends StatelessWidget {
                 'Active color : ThemeData.unselectedWidgetColor\n'
                 'Active selected color : ThemeData.toggleableActiveColor\n'
                 'Disabled color : ThemeData.disabledColor',
-                style: theme.primaryTextTheme.body2.copyWith(
+                style: theme.primaryTextTheme.bodyText1.copyWith(
                     height: 1.4,
                     color: getContrastColor(theme.primaryColorDark))),
           ),
-          Divider(),
-          Text('Checkbox', style: textTheme.subtitle),
+          const Divider(),
+          Text('Checkbox', style: textTheme.subtitle2),
           Column(
             children: [
               Row(
@@ -171,20 +171,20 @@ class WidgetPreview1 extends StatelessWidget {
               ),
               Row(
                 children: <Widget>[
-                  Checkbox(value: false, onChanged: null),
+                  const Checkbox(value: false, onChanged: null),
                   Text('Disabled Checkbox', style: bodyStyle)
                 ],
               ),
               Row(
                 children: <Widget>[
-                  Checkbox(value: true, onChanged: null),
+                  const Checkbox(value: true, onChanged: null),
                   Text('Selected Disabled Checkbox', style: bodyStyle)
                 ],
               ),
             ],
           ),
-          Divider(),
-          Text('Radio buttons', style: textTheme.subtitle),
+          const Divider(),
+          Text('Radio buttons', style: textTheme.subtitle2),
           Column(
             children: [
               Row(children: [
@@ -201,8 +201,8 @@ class WidgetPreview1 extends StatelessWidget {
               ]),
             ],
           ),
-          Divider(),
-          Text('Switchs', style: textTheme.subtitle),
+          const Divider(),
+          Text('Switchs', style: textTheme.subtitle2),
           Column(
             children: [
               Row(children: [
@@ -214,11 +214,11 @@ class WidgetPreview1 extends StatelessWidget {
                 Text('selected', style: bodyStyle)
               ]),
               Row(children: [
-                Switch(value: false, onChanged: null),
+                const Switch(value: false, onChanged: null),
                 Text('disabled', style: bodyStyle)
               ]),
               Row(children: [
-                Switch(value: true, onChanged: null),
+                const Switch(value: true, onChanged: null),
                 Text('disabled selected', style: bodyStyle)
               ]),
             ],

@@ -2,8 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+Color getColorFromMap(dynamic color) {
+  if (color == null) {
+    return null;
+  }
+  return Color(color);
+}
+
 String paddingToCode(EdgeInsets padding) {
-  padding ??= EdgeInsets.zero;
+  EdgeInsets paddingTmp;
+  if (padding == null) {
+    return 'null';
+  }
+  paddingTmp ??= EdgeInsets.zero;
   return 'EdgeInsets.only('
       'top:${padding.top},'
       'bottom:${padding.bottom},'
@@ -13,8 +24,12 @@ String paddingToCode(EdgeInsets padding) {
 }
 
 Map<String, dynamic> paddingToMap(EdgeInsets padding) {
-  padding ??= EdgeInsets.zero;
-  return {
+  EdgeInsets paddingTmp;
+  if (padding == null) {
+    return null;
+  }
+  paddingTmp ??= EdgeInsets.zero;
+  return <String, dynamic>{
     'top': padding.top.toInt(),
     'right': padding.right.toInt(),
     'bottom': padding.bottom.toInt(),
@@ -22,20 +37,28 @@ Map<String, dynamic> paddingToMap(EdgeInsets padding) {
   };
 }
 
-EdgeInsetsGeometry paddingFromMap(Map<String, dynamic> data) => EdgeInsets.only(
-      left: (data['left'] as int).toDouble(),
-      top: (data['top'] as int).toDouble(),
-      right: (data['right'] as int).toDouble(),
-      bottom: (data['bottom'] as int).toDouble(),
-    );
+EdgeInsetsGeometry paddingFromMap(Map<String, dynamic> data) {
+  if (data == null) {
+    return null;
+  }
+  EdgeInsets.only(
+    left: (data['left'] as int).toDouble(),
+    top: (data['top'] as int).toDouble(),
+    right: (data['right'] as int).toDouble(),
+    bottom: (data['bottom'] as int).toDouble(),
+  );
+}
 
 String colorToCode(Color color) {
-  if (color == null) return 'null';
-  return 'Color( 0x${color.value.toRadixString(16).padLeft(8, '0')} )';
+  if (color == null) {
+    return 'null';
+  }
+  return 'Color( 0x${color?.value.toRadixString(16).padLeft(8, '0')} )';
 }
 
 String colorSchemeToCode(ColorScheme scheme) {
-  return '''ColorScheme(
+  return '''
+  ColorScheme(
         primary: ${colorToCode(scheme.primary)},
         primaryVariant: ${colorToCode(scheme.primaryVariant)},
         secondary: ${colorToCode(scheme.secondary)},
@@ -53,6 +76,9 @@ String colorSchemeToCode(ColorScheme scheme) {
 }
 
 Map<String, dynamic> colorSchemeToMap(ColorScheme scheme) {
+  if (scheme == null) {
+    return null;
+  }
   return <String, dynamic>{
     'primary': scheme.primary.value,
     'primaryVariant': scheme.primaryVariant.value,
@@ -72,24 +98,27 @@ Map<String, dynamic> colorSchemeToMap(ColorScheme scheme) {
 
 ColorScheme colorSchemeFromMap(Map<String, dynamic> data) {
   return ColorScheme(
-    primary: Color(data['primary']),
-    primaryVariant: Color(data['primaryVariant']),
-    secondary: Color(data['secondary']),
-    secondaryVariant: Color(data['secondaryVariant']),
-    surface: Color(data['surface']),
-    background: Color(data['background']),
-    error: Color(data['error']),
-    onPrimary: Color(data['onPrimary']),
-    onSecondary: Color(data['onSecondary']),
-    onSurface: Color(data['onSurface']),
-    onBackground: Color(data['onBackground']),
-    onError: Color(data['onError']),
+    primary: getColorFromMap(data['primary']),
+    primaryVariant: getColorFromMap(data['primaryVariant']),
+    secondary: getColorFromMap(data['secondary']),
+    secondaryVariant: getColorFromMap(data['secondaryVariant']),
+    surface: getColorFromMap(data['surface']),
+    background: getColorFromMap(data['background']),
+    error: getColorFromMap(data['error']),
+    onPrimary: getColorFromMap(data['onPrimary']),
+    onSecondary: getColorFromMap(data['onSecondary']),
+    onSurface: getColorFromMap(data['onSurface']),
+    onBackground: getColorFromMap(data['onBackground']),
+    onError: getColorFromMap(data['onError']),
     brightness: Brightness.values[max(0, data['brightness'])],
   );
 }
 
 Map<String, dynamic> borderRadiusToMap(BorderRadiusGeometry radius) {
-  final borderRadius = radius as BorderRadius;
+  if (radius == null) {
+    return null;
+  }
+  BorderRadius borderRadius = radius as BorderRadius;
   return <String, dynamic>{
     'topLeft': {'x': borderRadius.topLeft.x, 'y': borderRadius.topLeft.y},
     'topRight': {'x': borderRadius.topRight.x, 'y': borderRadius.topRight.y},
@@ -105,12 +134,18 @@ Map<String, dynamic> borderRadiusToMap(BorderRadiusGeometry radius) {
 }
 
 String borderSideToCode(BorderSide side) {
+  if (side == null) {
+    return 'null';
+  }
   return 'BorderSide(color: ${colorToCode(side.color)}, width: ${side.width}, style: ${side.style}, )';
 }
 
 Map<String, dynamic> borderSideToMap(BorderSide side) {
+  if (side == null) {
+    return null;
+  }
   return <String, dynamic>{
-    'color': side.color.value,
+    'color': side.color?.value,
     'width': side.width.toStringAsFixed(0),
     'style': max(0, BorderStyle.values.indexOf(side.style)),
   };
@@ -126,10 +161,149 @@ BorderRadius borderRadiusFromMap(Map<String, dynamic> data) {
 }
 
 BorderSide borderSideFromMap(dynamic data) {
-  if (data == null || data == 'none') return BorderSide.none;
+  if (data == null || data == 'none') {
+    return BorderSide.none;
+  }
   return BorderSide(
-    color: Color(data['color']),
-    width: double.parse(data['width']) ?? 1.0,
+    color: getColorFromMap(data['color']),
+    width: double.parse(data['width']) ?? 1,
     style: BorderStyle.values[max(0, data['style'])],
   );
+}
+
+String getShapeBorderType(ShapeBorder border) {
+  if (border is RoundedRectangleBorder) {
+    return 'RoundedRectangleBorder';
+  }
+
+  if (border is StadiumBorder) {
+    return 'StadiumBorder';
+  }
+  if (border is CircleBorder) {
+    return 'CircleBorder';
+  }
+  if (border is BeveledRectangleBorder) {
+    return 'BeveledRectangleBorder';
+  }
+
+  return 'RoundedRectangleBorder';
+}
+
+Map<String, dynamic> shapeToMap(ShapeBorder border) {
+  if (border == null) {
+    return null;
+  }
+  String type = getShapeBorderType(border);
+
+  if (border is RoundedRectangleBorder) {
+    return <String, dynamic>{
+      'type': type,
+      'radius': borderRadiusToMap(border.borderRadius),
+      'side':
+          border.side == BorderSide.none ? 'none' : borderSideToMap(border.side)
+    };
+  }
+  if (border is BeveledRectangleBorder) {
+    return <String, dynamic>{
+      'type': type,
+      'radius': borderRadiusToMap(border.borderRadius),
+      'side':
+          border.side == BorderSide.none ? 'none' : borderSideToMap(border.side)
+    };
+  }
+  if (border is StadiumBorder) {
+    return <String, dynamic>{
+      'type': type,
+      'side':
+          border.side == BorderSide.none ? 'none' : borderSideToMap(border.side)
+    };
+  }
+  if (border is CircleBorder) {
+    return <String, dynamic>{
+      'type': type,
+      'side':
+          border.side == BorderSide.none ? 'none' : borderSideToMap(border.side)
+    };
+  }
+  return <String, dynamic>{
+    'type': type,
+  };
+}
+
+String shapeToCode(ShapeBorder border) {
+  if (border is RoundedRectangleBorder) {
+    return '''
+    RoundedRectangleBorder(
+      side: ${borderSideToCode(border.side)},
+      borderRadius: BorderRadius.all(${(border.borderRadius as BorderRadius).topLeft}),
+    )
+''';
+  }
+
+  if (border is BeveledRectangleBorder) {
+    return '''
+    BeveledRectangleBorder(
+      side: ${borderSideToCode(border.side)},
+      borderRadius: BorderRadius.all(${(border.borderRadius as BorderRadius).topLeft}),
+    )
+''';
+  }
+
+  if (border is StadiumBorder) {
+    return '''StadiumBorder( side: ${borderSideToCode(border.side)} )''';
+  }
+
+  if (border is CircleBorder) {
+    return '''CircleBorder( side: ${borderSideToCode(border.side)} )''';
+  }
+
+  return 'null';
+}
+
+ShapeBorder shapeFromMap(Map<String, dynamic> data) {
+  if (data['type'] == 'RoundedRectangleBorder') {
+    return RoundedRectangleBorder(
+        borderRadius: borderRadiusFromMap(data['radius']),
+        side: borderSideFromMap(data['side']));
+  }
+
+  if (data['type'] == 'BeveledRectangleBorder') {
+    return BeveledRectangleBorder(
+        borderRadius: borderRadiusFromMap(data['radius']),
+        side: borderSideFromMap(data['side']));
+  }
+
+  if (data['type'] == 'StadiumBorder') {
+    return StadiumBorder(side: borderSideFromMap(data['side']));
+  }
+
+  if (data['type'] == 'CircleBorder') {
+    return CircleBorder(side: borderSideFromMap(data['side']));
+  }
+
+  return const RoundedRectangleBorder();
+}
+
+TextDecoration decorationFromMap(String decoration) {
+  TextDecoration value;
+  if (decoration == null) {
+    return null;
+  }
+  switch (decoration?.toLowerCase()) {
+    case 'texttecoration.underline':
+      value = TextDecoration.underline;
+      break;
+    case 'texttecoration.overline':
+      value = TextDecoration.overline;
+      break;
+    case 'texttecoration.lineThrough':
+      value = TextDecoration.lineThrough;
+      break;
+    case 'texttecoration.none':
+    default:
+      value = TextDecoration.none;
+      break;
+  }
+
+  return value;
 }

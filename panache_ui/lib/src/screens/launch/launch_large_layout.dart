@@ -16,6 +16,8 @@ class LaunchLayout extends StatelessWidget {
   final void Function(ColorSwatch value) onSwatchSelection;
   final void Function(Brightness value) onBrightnessSelection;
   final Function(ThemeModel model) newTheme;
+
+  final Function(ThemeModel model) importTheme;
   final VoidCallback toggleEditMode;
   final List<Widget> Function(List<PanacheTheme> themes,
       {String basePath, Size size}) buildThemeThumbs;
@@ -29,6 +31,7 @@ class LaunchLayout extends StatelessWidget {
       this.onSwatchSelection,
       this.onBrightnessSelection,
       this.newTheme,
+      this.importTheme,
       this.toggleEditMode,
       this.buildThemeThumbs})
       : super(key: key);
@@ -59,7 +62,7 @@ class LaunchLayout extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: InkWell(
                 child: Image.asset('github.png', package: 'panache_ui'),
                 onTap: () => linkManager.open(_projectRepo),
@@ -82,6 +85,7 @@ class LaunchLayout extends StatelessWidget {
             onSwatchSelection: onSwatchSelection,
             onBrightnessSelection: onBrightnessSelection,
             onNewTheme: () => newTheme(model),
+            onImportTheme: () => importTheme(model),
           ),
         ),
         if ((model.themes?.isNotEmpty ?? false) && !kIsWeb)

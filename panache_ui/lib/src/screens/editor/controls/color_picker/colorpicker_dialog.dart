@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:panache_core/panache_core.dart';
 
 import './color_pickers.dart';
@@ -9,12 +11,14 @@ void showColorPicker(
     {BuildContext context,
     Color currentColor,
     ValueChanged<Color> onColor}) async {
-  final selectedColor = await showDialog<Color>(
+  Color selectedColor = await showDialog<Color>(
     context: context,
-    builder: (context) => ColorPickerDialog(currentColor),
+    builder: (BuildContext context) => ColorPickerDialog(currentColor),
   );
-  if (selectedColor == null) return;
-
+  if (selectedColor == null) {
+    return;
+  }
+  print("showColorPicker color returned $selectedColor");
   onColor(selectedColor);
 }
 
@@ -24,10 +28,15 @@ void showColorPicker(
 class ColorPickerDialog extends StatefulWidget {
   final Color currentColor;
 
-  ColorPickerDialog(this.currentColor);
+  const ColorPickerDialog(this.currentColor, {Key key}) : super(key: key);
 
   @override
-  _ColorPickerDialogState createState() => new _ColorPickerDialogState();
+  _ColorPickerDialogState createState() => _ColorPickerDialogState();
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('currentColor', currentColor));
+  }
 }
 
 class _ColorPickerDialogState extends State<ColorPickerDialog>
@@ -49,44 +58,51 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
 
   @override
   Widget build(BuildContext context) {
-    final mQ = MediaQuery.of(context);
+    MediaQueryData mQ = MediaQuery.of(context);
 
-    final buttonStyle = Theme.of(context).textTheme.button;
+    TextStyle buttonStyle = Theme.of(context).textTheme.button;
     return AlertDialog(
-      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
       content: mQ.orientation == Orientation.portrait
           ? _buildPortraitPicker()
           : _buildLandscapePicker(),
       actions: <Widget>[
         FlatButton(
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(
             'CANCEL',
             style: buttonStyle.copyWith(color: Colors.grey),
           ),
-          onPressed: () => Navigator.of(context).pop(),
         ),
         FlatButton.icon(
-          label: Text('SELECT'),
+          label: const Text('SELECT'),
           icon: Icon(Icons.check_circle, color: currentColor),
-          onPressed: () => Navigator.of(context).pop(currentColor),
+          onPressed: () => selectColor(currentColor),
         ),
       ],
     );
   }
 
-  _buildRGBPicker(Orientation orientation) => RGBPicker(
+  void selectColor(Color color) {
+    Navigator.of(context).pop(color);
+  }
+
+  void _buildRGBPicker(Orientation orientation) => RGBPicker(
+        onColor: (Color color) => setState(() {
+          print("Color received $color");
+          currentColor = color;
+        }),
+        color: currentColor,
+        orientation: orientation,
+      );
+
+  void _buildHSLPicker(Orientation orientation) => HSLPicker(
         onColor: (Color color) => setState(() => currentColor = color),
         color: currentColor,
         orientation: orientation,
       );
 
-  _buildHSLPicker(Orientation orientation) => HSLPicker(
-        onColor: (Color color) => setState(() => currentColor = color),
-        color: currentColor,
-        orientation: orientation,
-      );
-
-  _buildMaterialPicker() => MaterialPicker(
+  void _buildMaterialPicker() => MaterialPicker(
         onColor: (Color color) => setState(() => currentColor = color),
         color: currentColor,
       );
@@ -99,6 +115,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
         return _buildHSLPicker(orientation);
       case 2:
         return _buildMaterialPicker();
+
       default:
         return _buildRGBPicker(orientation);
     }
@@ -120,7 +137,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
         ),
         ColorThumbPreview(
           color: currentColor,
-          constraints: BoxConstraints.expand(height: 60),
+          constraints: const BoxConstraints.expand(height: 60),
         ),
         SizedBox(
           width: 100,
@@ -150,25 +167,21 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
         Row(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   ColorThumbPreview(
                     color: currentColor,
                     constraints: BoxConstraints.expand(width: 100, height: 60),
                   ),
-/*
                   SizedBox(
                     width: 100,
                     child: ColorTextField(
                       color: currentColor,
-                      onColorChanged: (color) =>
-                          setState(() => currentColor = color),
+                      onColorChanged: _updateColorValue,
                     ),
                   )
-*/
                 ],
               ),
             ),
@@ -180,7 +193,23 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
   }
 
   void _updateColorValue(Color color) {
-    setState(() => currentColor = color);
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
+        setState(() => currentColor = color);
+      });
+    } else {
+      setState(() => currentColor = color);
+    }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('currentColor', currentColor));
+    properties.add(
+        DiagnosticsProperty<TabController>('tabController', tabController));
+    properties.add(IntProperty('currentTabIndex', currentTabIndex));
   }
 }
 
@@ -192,12 +221,12 @@ class MaterialPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = List.from(Colors.primaries);
+    List<dynamic> colors = List.from(Colors.primaries);
     colors.addAll([white, black, grey]);
-    final swatches = colors
-        .map<Widget>((c) => InkWell(
-              child: Container(width: 42.0, height: 42.0, color: c),
-              onTap: () => onColor(c),
+    List<dynamic> swatches = colors
+        .map<Widget>((dynamic color) => InkWell(
+              child: Container(width: 42, height: 42, color: color),
+              onTap: () => onColor(color),
             ))
         .toList();
 
@@ -205,15 +234,21 @@ class MaterialPicker extends StatelessWidget {
       child: SizedBox(
         child: SingleChildScrollView(
           primary: true,
-          padding: EdgeInsets.symmetric(vertical: 8.0),
+          padding: EdgeInsets.symmetric(vertical: 8),
           child: Wrap(
-            runSpacing: 4.0,
-            spacing: 4.0,
+            runSpacing: 4,
+            spacing: 4,
             children: swatches,
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ObjectFlagProperty<Function(Color)>.has('onColor', onColor));
   }
 }
 
@@ -227,7 +262,7 @@ class ColorThumbPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: Container(
         constraints: constraints,
         /*
@@ -243,6 +278,14 @@ class ColorThumbPreview extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('color', color));
+    properties
+        .add(DiagnosticsProperty<BoxConstraints>('constraints', constraints));
+  }
 }
 
 class ColorTextField extends StatefulWidget {
@@ -254,6 +297,13 @@ class ColorTextField extends StatefulWidget {
 
   @override
   _ColorTextFieldState createState() => _ColorTextFieldState();
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('color', color));
+    properties.add(ObjectFlagProperty<Function(Color)>.has(
+        'onColorChanged', onColorChanged));
+  }
 }
 
 class _ColorTextFieldState extends State<ColorTextField> {
@@ -279,21 +329,22 @@ class _ColorTextFieldState extends State<ColorTextField> {
 
   @override
   void didUpdateWidget(ColorTextField oldWidget) {
-    if (oldWidget.color != widget.color)
-      fieldController.text = colorToHex32(widget.color).replaceFirst('#', '');
+    if (oldWidget.color != widget.color) {
+      fieldController.value = TextEditingValue(
+          text: colorToHex32(widget.color).replaceFirst('#', ''));
+    }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: TextFormField(
         maxLength: 8,
-        maxLines: 1,
         textAlign: TextAlign.center,
         controller: fieldController,
-        style: Theme.of(context).textTheme.body1.copyWith(fontSize: 12),
+        style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 12),
         decoration: InputDecoration(
             prefixText: '#',
             counterText: '',
@@ -311,5 +362,13 @@ class _ColorTextFieldState extends State<ColorTextField> {
       print('_ColorPreviewState.initState... $color');
       widget.onColorChanged(color);
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'fieldController', fieldController));
+    properties.add(DiagnosticsProperty<bool>('valid', valid));
   }
 }

@@ -12,11 +12,11 @@ class InputsPreview extends StatelessWidget {
     final disabledController = TextEditingController(text: 'Disabled');
 
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8),
       child: ListView(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: emptyController,
               autocorrect: false,
@@ -27,14 +27,14 @@ class InputsPreview extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: controller,
               autocorrect: false,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: emptyController,
               autocorrect: false,
@@ -45,7 +45,7 @@ class InputsPreview extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               enabled: false,
               controller: disabledController,
@@ -57,7 +57,7 @@ class InputsPreview extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: controller,
               autocorrect: false,
@@ -69,7 +69,7 @@ class InputsPreview extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: emptyController,
               autocorrect: false,

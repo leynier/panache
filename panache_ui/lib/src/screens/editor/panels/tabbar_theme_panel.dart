@@ -1,39 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
+import 'package:panache_ui/src/screens/editor/controls/text_style_control.dart';
 
 import '../controls/color_selector.dart';
 import '../editor_utils.dart';
+
+String _themeRef = 'tabBarTheme';
 
 class TabBarThemePanel extends StatelessWidget {
   final ThemeModel model;
 
   TabBarTheme get tabTheme => model.theme.tabBarTheme;
 
-  TabBarThemePanel(this.model);
+  const TabBarThemePanel(this.model, {Key key}) : super(key: key);
 
   Color get selectedColor =>
       model.theme.tabBarTheme.labelColor ??
-      model.theme.primaryTextTheme.body2.color;
+      model.theme.primaryTextTheme.bodyText1.color;
 
   @override
   Widget build(BuildContext context) {
+    TextStyle labelStyle = tabTheme.labelStyle ?? createDefaultTextStyle();
+    TextStyle unselectedLabelStyle =
+        tabTheme.unselectedLabelStyle ?? createDefaultTextStyle();
     return Container(
       padding: kPadding,
       color: Colors.grey.shade100,
       child: Column(
         children: <Widget>[
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             ColorSelector(
               'Label color',
               selectedColor,
-              (color) =>
+              (Color color) =>
                   _updateTabBarTheme(tabTheme.copyWith(labelColor: color)),
               padding: 4,
             ),
             ColorSelector(
               'Unselected label color',
               tabTheme.unselectedLabelColor ?? selectedColor.withAlpha(0xB2),
-              (color) => _updateTabBarTheme(
+              (Color color) => _updateTabBarTheme(
                   tabTheme.copyWith(unselectedLabelColor: color)),
               padding: 4,
             ),
@@ -49,6 +55,28 @@ class TabBarThemePanel extends StatelessWidget {
             indicatorSize: tabTheme.indicatorSize,
             onSizeModeChanged: (TabBarIndicatorSize value) =>
                 _updateTabBarTheme(tabTheme.copyWith(indicatorSize: value)),
+          ),
+          const Divider(),
+          const Text('labelStyle'),
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            tabTheme.copyWith,
+            key: 'labelStyle',
+            textStyle: labelStyle,
+            label: 'labelStyle',
+            styleName: 'labelStyle',
+          ),
+          const Divider(),
+          const Text('unselectedLabelStyle'),
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            tabTheme.copyWith,
+            key: 'unselectedLabelStyle',
+            textStyle: unselectedLabelStyle,
+            label: 'unselectedLabelStyle',
+            styleName: 'unselectedLabelStyle',
           ),
         ],
       ),
@@ -69,18 +97,18 @@ class _TabBarIndicatorSizeControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appTextTheme = Theme.of(context).textTheme;
+    TextTheme appTextTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: FieldBorder(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(right: 18.0),
+              padding: const EdgeInsets.only(right: 18),
               child: Text(
                 'Indicator size',
-                style: appTextTheme.subtitle,
+                style: appTextTheme.subtitle2,
               ),
             ),
             Radio(
@@ -88,7 +116,7 @@ class _TabBarIndicatorSizeControl extends StatelessWidget {
                 groupValue: indicatorSize ?? TabBarIndicatorSize.tab,
                 onChanged: onSizeModeChanged),
             Padding(
-              padding: const EdgeInsets.only(right: 18.0),
+              padding: const EdgeInsets.only(right: 18),
               child: Text('Tab'),
             ),
             Radio(
@@ -113,10 +141,10 @@ class _TabBarIndicatorControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     return FieldBorder(
       child: Row(children: [
-        Text('Indicator decoration', style: textTheme.subtitle),
+        Text('Indicator decoration', style: textTheme.subtitle2),
         DropdownButton(
             items: _indicatorDecorations.map((value) {
               return DropdownMenuItem(
@@ -137,7 +165,7 @@ final List<IndicatorDecoration> _indicatorDecorations = [
     ShapeDecoration(
       color: Colors.pink,
       shape: BeveledRectangleBorder(
-        borderRadius: BorderRadius.only(topRight: Radius.circular(5.0)),
+        borderRadius: BorderRadius.only(topRight: Radius.circular(5)),
       ),
     ),
   )

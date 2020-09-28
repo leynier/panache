@@ -20,7 +20,7 @@ void main() async {
 
   final dir = await getApplicationDocumentsDirectory();
 
-  final themeModel = ThemeModel(
+  ThemeModel themeModel = ThemeModel(
       localData: localData,
       service: IOThemeService(
         themeExporter: exportTheme,
@@ -46,8 +46,8 @@ class PanacheApp extends StatelessWidget {
         theme: buildAppTheme(theme, panachePrimarySwatch),
         home: LaunchScreen(model: themeModel),
         routes: {
-          '/home': (context) => LaunchScreen(model: themeModel),
-          '/editor': (context) => PanacheEditorScreen(),
+          '/home': (BuildContext context) => LaunchScreen(model: themeModel),
+          '/editor': (BuildContext context) => PanacheEditorScreen(),
         },
       ),
     );

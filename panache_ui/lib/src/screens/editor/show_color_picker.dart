@@ -7,9 +7,9 @@ import 'package:panache_core/panache_core.dart';
 import 'color_stream.dart';
 
 const Duration _kMenuDuration = const Duration(milliseconds: 100);
-const double _kMenuCloseIntervalEnd = 2.0 / 3.0;
-const double _kMenuItemHeight = 48.0;
-const double _kMenuScreenPadding = 0.0;
+const double _kMenuCloseIntervalEnd = 2.0 / 3;
+const double _kMenuItemHeight = 48;
+const double _kMenuScreenPadding = 0;
 
 /// push a route to Navigator
 /// the position is expected
@@ -18,7 +18,7 @@ Future<T> showColorPicker<T>(
     RelativeRect position,
     @required List<PopupMenuEntry<T>> items,
     T initialValue,
-    double elevation: 8.0,
+    double elevation: 8,
     ColorStream colorStream}) {
   assert(context != null);
   assert(items != null && items.isNotEmpty);
@@ -60,7 +60,7 @@ class _ColorPickerPopup<T> extends PopupRoute<T> {
   Animation<double> createAnimation() => CurvedAnimation(
       parent: super.createAnimation(),
       curve: Curves.linear,
-      reverseCurve: const Interval(0.0, _kMenuCloseIntervalEnd));
+      reverseCurve: const Interval(0, _kMenuCloseIntervalEnd));
 
   @override
   Duration get transitionDuration => _kMenuDuration;
@@ -76,7 +76,7 @@ class _ColorPickerPopup<T> extends PopupRoute<T> {
       Animation<double> secondaryAnimation) {
     /*double selectedItemOffset;
     if (initialValue != null) {
-      selectedItemOffset = 0.0;
+      selectedItemOffset = 0;
     }*/
 
     Widget menu = _PopupMenu<T>(route: this, colorStream: colorStream);
@@ -159,8 +159,8 @@ class _PopupMenuState extends State<_PopupMenu> {
     }
 
     final Widget colorsGrid = SizedBox(
-      width: 480.0,
-      height: 320.0,
+      width: 480,
+      height: 320,
       child: GridView(
         children: children,
         padding: EdgeInsets.zero,
@@ -202,7 +202,7 @@ class _PopupMenuState extends State<_PopupMenu> {
                     Text(colorToHex32(currentColor)),
                     Expanded(child: SizedBox()),
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.check_circle,
                         color: Colors.green,
                       ),
@@ -273,7 +273,7 @@ class _PopupGridMenuItemState<T extends PopupGridMenuItem<Color>>
   Widget buildChild() => widget.child;
 
   void onTap() {
-    //Navigator.pop(context, widget.value);
+    //Navigator.pop(BuildContext context, widget.value);
     print('_PopupGridMenuItemState.onTap... ${widget.value}');
     widget.onSelection(widget.value);
   }
@@ -281,7 +281,7 @@ class _PopupGridMenuItemState<T extends PopupGridMenuItem<Color>>
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    TextStyle style = theme.textTheme.subhead;
+    TextStyle style = theme.textTheme.subtitle1;
     if (!widget.enabled) style = style.copyWith(color: theme.disabledColor);
 
     return InkWell(
@@ -289,7 +289,7 @@ class _PopupGridMenuItemState<T extends PopupGridMenuItem<Color>>
       child: MergeSemantics(
         child: Container(
           height: widget.height,
-          padding: const EdgeInsets.symmetric(horizontal: 0.0),
+          padding: const EdgeInsets.symmetric(horizontal: 0),
           child: buildChild(),
         ),
       ),

@@ -8,7 +8,7 @@ class SliderPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -50,7 +50,7 @@ class _FakeSliderState extends State<_FakeSlider> {
   Widget build(BuildContext context) {
     print('_FakeSliderState.build... ');
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: Slider(
           key: Key(widget.id.toString()),
           divisions: widget.divisions,

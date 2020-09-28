@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
+import 'package:panache_ui/src/screens/editor/controls/drop_down_control.dart';
 
 import '../controls/color_selector.dart';
 import '../controls/inputs_border_control.dart';
@@ -8,32 +10,46 @@ import '../controls/switcher_control.dart';
 import '../controls/text_style_control.dart';
 import '../editor_utils.dart';
 
-const _themeRef = 'inputDecorationTheme';
+String _themeRef = 'inputDecorationTheme';
 
 class InputDecorationThemePanel extends StatelessWidget {
   final ThemeModel model;
+  final Function currentThemeCopyWith;
+  final String modelParamRef;
+  //InputDecorationTheme get inputTheme => model.theme.inputDecorationTheme;
+  InputDecorationTheme inputTheme;
 
-  InputDecorationTheme get inputTheme => model.theme.inputDecorationTheme;
+  InputDecorationThemePanel(this.model, InputDecorationTheme inputThemeToModify,
+      {Key key, this.currentThemeCopyWith, this.modelParamRef})
+      : super(key: key) {
+    inputTheme = inputThemeToModify ?? model.theme.inputDecorationTheme;
+  }
 
-  InputDecorationThemePanel(this.model);
+  final List<SelectionItem<FloatingLabelBehavior>> _floatingLabelBehaviors =
+      <SelectionItem<FloatingLabelBehavior>>[
+    SelectionItem<FloatingLabelBehavior>('auto', FloatingLabelBehavior.auto),
+    SelectionItem<FloatingLabelBehavior>(
+        'always', FloatingLabelBehavior.always),
+    SelectionItem<FloatingLabelBehavior>('never', FloatingLabelBehavior.never),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle =
+    TextStyle baseStyle =
         model.theme.textTheme.caption.copyWith(color: model.theme.hintColor);
-    final helperStyle = inputTheme.helperStyle ?? baseStyle;
-    final labelStyle = inputTheme.labelStyle ?? baseStyle;
-    final hintStyle = inputTheme.hintStyle ?? baseStyle;
-    final errorStyle = inputTheme.errorStyle ??
+    TextStyle helperStyle = inputTheme.helperStyle ?? baseStyle;
+    TextStyle labelStyle = inputTheme.labelStyle ?? baseStyle;
+    TextStyle hintStyle = inputTheme.hintStyle ?? baseStyle;
+    TextStyle errorStyle = inputTheme.errorStyle ??
         baseStyle.copyWith(color: model.theme.errorColor);
-    final counterStyle = inputTheme.counterStyle ?? baseStyle;
-    final prefixStyle = inputTheme.prefixStyle ?? baseStyle;
-    final suffixStyle = inputTheme.suffixStyle ?? baseStyle;
+    TextStyle counterStyle = inputTheme.counterStyle ?? baseStyle;
+    TextStyle prefixStyle = inputTheme.prefixStyle ?? baseStyle;
+    TextStyle suffixStyle = inputTheme.suffixStyle ?? baseStyle;
 
-    final orientation = MediaQuery.of(context).orientation;
-    final inPortrait = orientation == Orientation.portrait;
-    final isLargeLayout = MediaQuery.of(context).size.shortestSide >= 600;
-    final useMobileLayout = !inPortrait && !isLargeLayout;
+    Orientation orientation = MediaQuery.of(context).orientation;
+    bool inPortrait = orientation == Orientation.portrait;
+    bool isLargeLayout = MediaQuery.of(context).size.shortestSide >= 600;
+    bool useMobileLayout = !inPortrait && !isLargeLayout;
 
     return Container(
       padding: kPadding,
@@ -42,23 +58,41 @@ class InputDecorationThemePanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             SwitcherControl(
               label: 'Filled',
               checked: inputTheme.filled,
-              onChange: (filled) => _updateInputDecorationTheme(
+              onChange: (bool filled) => _updateInputDecorationTheme(
                   _copyInputDecorationThemeWith(inputTheme, filled: filled)),
             ),
             ColorSelector(
               'Fill color',
               inputTheme.fillColor ?? Colors.white.withAlpha(0),
-              (color) => _updateInputDecorationTheme(
+              (Color color) => _updateInputDecorationTheme(
                   _copyInputDecorationThemeWith(inputTheme,
                       fillColor: color, filled: true)),
               padding: 0,
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
+            ColorSelector(
+              'focusColor',
+              inputTheme.focusColor ?? Colors.white.withAlpha(0),
+              (Color color) => _updateInputDecorationTheme(
+                  _copyInputDecorationThemeWith(inputTheme,
+                      focusColor: color, filled: true)),
+              padding: 0,
+            ),
+            ColorSelector(
+              'hoverColor',
+              inputTheme.hoverColor ?? Colors.white.withAlpha(0),
+              (Color color) => _updateInputDecorationTheme(
+                  _copyInputDecorationThemeWith(inputTheme,
+                      hoverColor: color, filled: true)),
+              padding: 0,
+            ),
+          ]),
+          getFieldsRow(<Widget>[
             InputBorderControl(
               label: 'Border',
               padding: 2,
@@ -81,7 +115,7 @@ class InputDecorationThemePanel extends StatelessWidget {
               },
             )
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             InputBorderControl(
               label: 'Enabled border',
               axis: Axis.vertical,
@@ -105,7 +139,7 @@ class InputDecorationThemePanel extends StatelessWidget {
               },
             ),
           ]),
-          getFieldsRow([
+          getFieldsRow(<Widget>[
             InputBorderControl(
               label: 'Focused border',
               axis: Axis.vertical,
@@ -130,8 +164,8 @@ class InputDecorationThemePanel extends StatelessWidget {
             ),
           ]),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: getFieldsRow([
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: getFieldsRow(<Widget>[
               SwitcherControl(
                 label: 'Is dense',
                 checked: inputTheme.isDense,
@@ -148,69 +182,126 @@ class InputDecorationThemePanel extends StatelessWidget {
                       ))),
             ]),
           ),
-          SwitcherControl(
-              label: 'Has floating label',
-              checked: inputTheme.hasFloatingPlaceholder,
-              onChange: (value) =>
-                  _updateInputDecorationTheme(_copyInputDecorationThemeWith(
-                    inputTheme,
-                    hasFloatingPlaceholder: value,
-                  ))),
-          Divider(),
-          _buildTextStyleControl(
+          getFieldsRow(<Widget>[
+            PanacheDropdown<SelectionItem<FloatingLabelBehavior>>(
+              label: 'floatingLabelBehavior ',
+              selection: inputTheme.floatingLabelBehavior != null
+                  ? _floatingLabelBehaviors.firstWhere(
+                      (SelectionItem<FloatingLabelBehavior> item) =>
+                          item.value == inputTheme.floatingLabelBehavior)
+                  : _floatingLabelBehaviors.first,
+              collection: _floatingLabelBehaviors,
+              onValueChanged: (SelectionItem<FloatingLabelBehavior>
+                      floatingLabelBehavior) =>
+                  _updateInputDecorationTheme(inputTheme.copyWith(
+                      floatingLabelBehavior: floatingLabelBehavior.value)),
+            ),
+            SwitcherControl(
+                label: 'alignLabelWithHint',
+                checked: inputTheme.alignLabelWithHint,
+                onChange: (bool value) =>
+                    _updateInputDecorationTheme(_copyInputDecorationThemeWith(
+                      inputTheme,
+                      alignLabelWithHint: value,
+                    ))),
+          ]),
+          const Divider(),
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-label_style',
             textStyle: labelStyle,
             label: 'Label style',
             styleName: 'labelStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
-          _buildTextStyleControl(
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-hint_style',
             textStyle: hintStyle,
             label: 'Hint style',
             styleName: 'hintStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
-          _buildTextStyleControl(
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-helper_style',
             textStyle: helperStyle,
             label: 'Helper style',
             styleName: 'helperStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
-          _buildTextStyleControl(
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-error_style',
             textStyle: errorStyle,
             label: 'Error style',
             styleName: 'errorStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
-          _buildTextStyleControl(
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-prefix_style',
             textStyle: prefixStyle,
             label: 'Prefix style',
             styleName: 'prefixStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
-          _buildTextStyleControl(
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-suffix_style',
             textStyle: suffixStyle,
             label: 'Suffix style',
             styleName: 'suffixStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
-          _buildTextStyleControl(
+          buildTextStyleControl(
+            _themeRef,
+            model,
+            _copyInputDecorationThemeWith,
             key: 'ctrl-counter_style',
             textStyle: counterStyle,
             label: 'Counter style',
             styleName: 'counterStyle',
             useMobileLayout: useMobileLayout,
+            positionalArguments: <dynamic>[inputTheme],
+            currentThemeCopyWith: currentThemeCopyWith,
+            modelParamRef: modelParamRef,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            padding: const EdgeInsets.symmetric(vertical: 6),
             child: Container(
               color: Colors.white70,
-              padding: const EdgeInsets.all(6.0),
+              padding: const EdgeInsets.all(6),
               child: SliderPropertyControl(
                 inputTheme.contentPadding?.vertical ?? 0,
                 (double newValue) => _updateInputDecorationTheme(
@@ -226,10 +317,24 @@ class InputDecorationThemePanel extends StatelessWidget {
     );
   }
 
-  void _updateInputDecorationTheme(InputDecorationTheme inputTheme) =>
-      model.updateTheme(model.theme.copyWith(inputDecorationTheme: inputTheme));
+  void _updateInputDecorationTheme(InputDecorationTheme inputTheme) {
+    //On sub theme ref
+    if (modelParamRef != null && currentThemeCopyWith != null) {
+      model.updateTheme(
+          Function.apply(model.theme.copyWith, null, <Symbol, dynamic>{
+        Symbol(modelParamRef): Function.apply(currentThemeCopyWith, null,
+            <Symbol, dynamic>{const Symbol('inputDecorationTheme'): inputTheme})
+      }));
 
-  TextStyleControl _buildTextStyleControl({
+      model.updateTheme(model.theme.copyWith());
+    }
+    //Directly on model.theme
+    else {
+      model.updateTheme(model.theme.copyWith(inputDecorationTheme: inputTheme));
+    }
+  }
+
+  /*TextStyleControl _buildTextStyleControl({
     @required String key,
     @required String label,
     @required TextStyle textStyle,
@@ -242,9 +347,9 @@ class InputDecorationThemePanel extends StatelessWidget {
       useMobileLayout: useMobileLayout,
       style: textStyle,
       maxFontSize: 24,
-      onColorChanged: (color) =>
+      onColorChanged: (Color color) =>
           apply(textStyle.copyWith(color: color), styleName),
-      onSizeChanged: (size) =>
+      onSizeChanged: (double size) =>
           apply(textStyle.copyWith(fontSize: size), styleName),
       onWeightChanged: (isBold) => apply(
           textStyle.copyWith(
@@ -270,60 +375,76 @@ class InputDecorationThemePanel extends StatelessWidget {
   }
 
   void apply(TextStyle style, String styleName) {
-    final styleArgs = <Symbol, dynamic>{};
+    Map<Symbol, dynamic> styleArgs = <Symbol, dynamic>{};
     styleArgs[Symbol(styleName)] = style;
 
-    final args = <Symbol, dynamic>{};
+    Map<Symbol, dynamic> args = <Symbol, dynamic>{};
     args[Symbol(_themeRef)] =
         Function.apply(_copyInputDecorationThemeWith, [inputTheme], styleArgs);
     model.updateTheme(Function.apply(model.theme.copyWith, null, args));
-  }
-}
+  }*/
 
-InputDecorationTheme _copyInputDecorationThemeWith(
-  InputDecorationTheme theme, {
-  InputBorder border,
-  EdgeInsetsGeometry contentPadding,
-  TextStyle counterStyle,
-  InputBorder disabledBorder,
-  InputBorder enabledBorder,
-  InputBorder errorBorder,
-  int errorMaxLines,
-  TextStyle errorStyle,
-  Color fillColor,
-  bool filled,
-  InputBorder focusedBorder,
-  InputBorder focusedErrorBorder,
-  bool hasFloatingPlaceholder,
-  TextStyle helperStyle,
-  TextStyle hintStyle,
-  bool isCollapsed,
-  bool isDense,
-  TextStyle labelStyle,
-  TextStyle prefixStyle,
-  TextStyle suffixStyle,
-}) {
-  return InputDecorationTheme(
-    border: border ?? theme.border,
-    contentPadding: contentPadding ?? theme.contentPadding,
-    counterStyle: counterStyle ?? theme.counterStyle,
-    disabledBorder: disabledBorder ?? theme.disabledBorder,
-    enabledBorder: enabledBorder ?? theme.enabledBorder,
-    errorBorder: errorBorder ?? theme.errorBorder,
-    errorMaxLines: errorMaxLines ?? theme.errorMaxLines,
-    errorStyle: errorStyle ?? theme.errorStyle,
-    fillColor: fillColor ?? theme.fillColor,
-    filled: filled ?? theme.filled,
-    focusedBorder: focusedBorder ?? theme.focusedBorder,
-    focusedErrorBorder: focusedErrorBorder ?? theme.focusedErrorBorder,
-    hasFloatingPlaceholder:
-        hasFloatingPlaceholder ?? theme.hasFloatingPlaceholder,
-    helperStyle: helperStyle ?? theme.helperStyle,
-    hintStyle: hintStyle ?? theme.hintStyle,
-    isCollapsed: isCollapsed ?? theme.isCollapsed,
-    isDense: isDense ?? theme.isDense,
-    labelStyle: labelStyle ?? theme.labelStyle,
-    prefixStyle: prefixStyle ?? theme.prefixStyle,
-    suffixStyle: suffixStyle ?? theme.suffixStyle,
-  );
+  InputDecorationTheme _copyInputDecorationThemeWith(InputDecorationTheme theme,
+      {InputBorder border,
+      EdgeInsetsGeometry contentPadding,
+      TextStyle counterStyle,
+      InputBorder disabledBorder,
+      InputBorder enabledBorder,
+      InputBorder errorBorder,
+      int errorMaxLines,
+      TextStyle errorStyle,
+      Color fillColor,
+      bool filled,
+      InputBorder focusedBorder,
+      InputBorder focusedErrorBorder,
+      bool hasFloatingPlaceholder,
+      TextStyle helperStyle,
+      TextStyle hintStyle,
+      bool isCollapsed,
+      bool isDense,
+      TextStyle labelStyle,
+      TextStyle prefixStyle,
+      TextStyle suffixStyle,
+      Color hoverColor,
+      Color focusColor,
+      FloatingLabelBehavior floatingLabelBehavior,
+      bool alignLabelWithHint}) {
+    return InputDecorationTheme(
+      border: border ?? theme.border,
+      contentPadding: contentPadding ?? theme.contentPadding,
+      counterStyle: counterStyle ?? theme.counterStyle,
+      disabledBorder: disabledBorder ?? theme.disabledBorder,
+      enabledBorder: enabledBorder ?? theme.enabledBorder,
+      errorBorder: errorBorder ?? theme.errorBorder,
+      errorMaxLines: errorMaxLines ?? theme.errorMaxLines,
+      errorStyle: errorStyle ?? theme.errorStyle,
+      fillColor: fillColor ?? theme.fillColor,
+      filled: filled ?? theme.filled,
+      focusedBorder: focusedBorder ?? theme.focusedBorder,
+      focusedErrorBorder: focusedErrorBorder ?? theme.focusedErrorBorder,
+      helperStyle: helperStyle ?? theme.helperStyle,
+      hintStyle: hintStyle ?? theme.hintStyle,
+      isCollapsed: isCollapsed ?? theme.isCollapsed,
+      isDense: isDense ?? theme.isDense,
+      labelStyle: labelStyle ?? theme.labelStyle,
+      prefixStyle: prefixStyle ?? theme.prefixStyle,
+      suffixStyle: suffixStyle ?? theme.suffixStyle,
+      hoverColor: hoverColor ?? theme.hoverColor,
+      focusColor: focusColor ?? theme.focusColor,
+      floatingLabelBehavior:
+          floatingLabelBehavior ?? theme.floatingLabelBehavior,
+      alignLabelWithHint: alignLabelWithHint ?? theme.alignLabelWithHint,
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<ThemeModel>('model', model));
+    properties.add(DiagnosticsProperty<Function>(
+        'currentThemeCopyWith', currentThemeCopyWith));
+    properties.add(StringProperty('modelParamRef', modelParamRef));
+    properties.add(
+        DiagnosticsProperty<InputDecorationTheme>('inputTheme', inputTheme));
+  }
 }

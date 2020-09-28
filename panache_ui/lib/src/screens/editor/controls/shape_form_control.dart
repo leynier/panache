@@ -35,8 +35,8 @@ class ShapeFormControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final _labelStyle = labelStyle ?? textTheme.subtitle;
+    TextTheme textTheme = Theme.of(context).textTheme;
+    final _labelStyle = labelStyle ?? textTheme.subtitle2;
     return ControlContainerBorder(
       padding: EdgeInsets.only(top: 6, bottom: 0, left: 8, right: 8),
       child: Flex(
@@ -45,16 +45,16 @@ class ShapeFormControl extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(right: 16.0),
+            padding: EdgeInsets.only(right: 16),
             child: Text(
               'Shape',
-              style: _labelStyle,
+              //style: _labelStyle,
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            padding: EdgeInsets.symmetric(horizontal: 4),
             child: DropdownButton(
-                style: textTheme.body2,
+                style: textTheme.bodyText1,
                 value: _getShapeType(shape),
                 items: shapes.map(_getShapeMenuItem).toList(),
                 onChanged: (type) => onShapeChanged(_buildShape(type))),
@@ -75,13 +75,13 @@ class ShapeFormControl extends StatelessWidget {
         return new CircleBorder();
       case BorderShapes.BeveledRectangleBorder:
         return new BeveledRectangleBorder(
-            borderRadius: BorderRadius.circular(6.0));
+            borderRadius: BorderRadius.circular(6));
       case BorderShapes.RoundedRectangleBorder:
         return new RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.0));
+            borderRadius: BorderRadius.circular(4));
       default:
         return new RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.0));
+            borderRadius: BorderRadius.circular(4));
     }
   }
 

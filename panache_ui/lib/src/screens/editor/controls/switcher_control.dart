@@ -10,18 +10,19 @@ class SwitcherControl extends StatelessWidget {
 
   final Axis direction;
 
-  SwitcherControl({
-    this.label,
-    this.checkedLabel: '',
-    this.checked,
-    this.direction: Axis.horizontal,
-    this.onChange,
-  });
+  const SwitcherControl(
+      {this.label,
+      this.checkedLabel: '',
+      this.checked,
+      this.direction: Axis.horizontal,
+      this.onChange,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final labelStyle = textTheme.subtitle;
+    TextTheme textTheme = Theme.of(context).textTheme;
+    final labelStyle = textTheme.subtitle2;
 
     final children = <Widget>[
       Flex(
@@ -37,7 +38,7 @@ class SwitcherControl extends StatelessWidget {
     ];
     if (label != null)
       children.add(Padding(
-        padding: const EdgeInsets.only(right: 6.0),
+        padding: const EdgeInsets.only(right: 6),
         child: Text(
           label,
           style: labelStyle,

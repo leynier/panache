@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:html';
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:panache_core/panache_core.dart';
@@ -47,6 +51,7 @@ class LaunchScreenState extends State<LaunchScreen> {
               onSwatchSelection: onSwatchSelection,
               onBrightnessSelection: onBrightnessSelection,
               newTheme: _newTheme,
+              importTheme: _importTheme,
               editMode: editMode,
               toggleEditMode: () => setState(() => editMode = !editMode),
               buildThemeThumbs: _buildThemeThumbs),
@@ -92,5 +97,54 @@ class LaunchScreenState extends State<LaunchScreen> {
         content: Text('Error : Can\'t load this theme.'),
         backgroundColor: Colors.red.shade700,
       ));
+  }
+
+  _importTheme(ThemeModel model) async {
+    await _startFilePicker(model);
+
+    ///model.newTheme(primarySwatch: newThemePrimary, brightness: initialBrightness);
+  }
+
+  _startFilePicker(ThemeModel model) async {
+    // variable to hold image to be displayed
+    var fileUploaded;
+    InputElement uploadInput = FileUploadInputElement();
+    uploadInput.multiple = false;
+    uploadInput.accept = ".json,.dart";
+    uploadInput.click();
+
+    uploadInput.onChange.listen((Event e) {
+      // read file content as dataURL
+      List<File> files = uploadInput.files;
+      if (files.length == 1) {
+        File file = files[0];
+        FileReader reader = FileReader();
+
+        reader.onLoadEnd.listen((ProgressEvent e) {
+          setState(() {
+            fileUploaded = reader.result;
+            print(
+                "Fichier ${file.name} chargé en mémoire (${fileUploaded.length})");
+            _createThemeFromJSON(model, fileUploaded.toString());
+          });
+        });
+
+        reader.onError.listen((ProgressEvent fileEvent) {
+          setState(() {
+            print("Some Error occured while reading the file");
+          });
+        });
+        reader.readAsText(file);
+      }
+    });
+  }
+
+  void _createThemeFromJSON(ThemeModel model, String source) {
+    //Map<String, dynamic> jsconTheme = jsonDecode(source);
+
+    model.loadThemeFromJSON(source);
+
+    _editTheme();
+    print('JSON decoded');
   }
 }

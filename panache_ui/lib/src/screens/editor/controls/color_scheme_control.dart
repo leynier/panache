@@ -44,13 +44,13 @@ class ColorSchemeControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final appTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.only(top: 16),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Text(
             'Color scheme',
-            style: appTheme.title,
+            style: appTheme.headline6,
           ),
           GridView.count(
             shrinkWrap: true,
@@ -72,7 +72,7 @@ class ColorSchemeControl extends StatelessWidget {
       return ColorSelector(
         property,
         _getSchemeColor(property, _scheme),
-        (color) => _onColorChanged(property, color),
+        (Color color) => _onColorChanged(property, color),
         padding: 2,
       );
     }).toList(growable: false);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:panache_core/src/converters/button_theme_converters.dart';
+import 'package:panache_core/src/converters/converter_utils.dart';
 
 import 'mock_button_theme.dart';
 
@@ -9,44 +10,43 @@ void main() {
 
   group('convert buttonTheme', () {
     /*setUp(() {
-      final theme = ThemeData.light();
+      ThemeData  theme = ThemeData.light();
       buttonTheme = theme.buttonTheme;
     });*/
 
     test('buttonShapeToCode', () {
       expect(
-          buttonShapeToCode(
+          shapeToCode(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(2))),
           roundedRectangleBorderCode);
-      expect(buttonShapeToCode(BeveledRectangleBorder()),
-          beveledRectangleBorderCode);
-      expect(buttonShapeToCode(StadiumBorder()), stadiumBorderCode);
-      expect(buttonShapeToCode(CircleBorder()), circleBorderCode);
+      expect(shapeToCode(BeveledRectangleBorder()), beveledRectangleBorderCode);
+      expect(shapeToCode(StadiumBorder()), stadiumBorderCode);
+      expect(shapeToCode(CircleBorder()), circleBorderCode);
     });
 
     test('buttonShapeToCode - with border', () {
       expect(
-          buttonShapeToCode(
+          shapeToCode(
             RoundedRectangleBorder(
-              side: BorderSide(color: Color(0xff000000), width: 1.0),
-              borderRadius: BorderRadius.all(Radius.circular(2.0)),
+              side: BorderSide(color: Color(0xff000000), width: 1),
+              borderRadius: BorderRadius.all(Radius.circular(2)),
             ),
           ),
           roundedRectangleBorderSideCode);
 
       expect(
-          buttonShapeToCode(BeveledRectangleBorder(
-              side: BorderSide(color: Color(0xff000000), width: 1.0))),
+          shapeToCode(BeveledRectangleBorder(
+              side: BorderSide(color: Color(0xff000000), width: 1))),
           beveledRectangleBorderSideCode);
 
       expect(
-          buttonShapeToCode(StadiumBorder(
-              side: BorderSide(color: Color(0xff000000), width: 1.0))),
+          shapeToCode(StadiumBorder(
+              side: BorderSide(color: Color(0xff000000), width: 1))),
           stadiumRectangleBorderSideCode);
 
       expect(
-          buttonShapeToCode(CircleBorder(
-              side: BorderSide(color: Color(0xff000000), width: 1.0))),
+          shapeToCode(CircleBorder(
+              side: BorderSide(color: Color(0xff000000), width: 1))),
           circleBorderSideCode);
     });
   });

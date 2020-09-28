@@ -5,6 +5,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:panache_core/panache_core.dart';
+
+import 'package:panache_ui/src/screens/preview/subscreens/others_2_preview.dart';
+import 'package:panache_ui/src/screens/preview/subscreens/toggle_button_preview.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'code_preview.dart';
@@ -32,18 +35,27 @@ class AppPreviewContainer extends StatefulWidget {
   final Size size;
   final bool showCode;
 
-  AppPreviewContainer(this.size, {this.showCode});
+  const AppPreviewContainer(this.size, {this.showCode, Key key})
+      : super(key: key);
 
   @override
   AppPreviewContainerState createState() {
-    return new AppPreviewContainerState();
+    return AppPreviewContainerState();
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Size>('size', size));
+    properties.add(DiagnosticsProperty<bool>('showCode', showCode));
   }
 }
 
 class AppPreviewContainerState extends State<AppPreviewContainer> {
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<ThemeModel>(builder: (context, child, model) {
+    return ScopedModelDescendant<ThemeModel>(
+        builder: (BuildContext context, child, model) {
       return Material(
         child: widget.showCode
             ? ThemeCodePreview(model)
@@ -83,13 +95,15 @@ class ThemePreviewAppState extends State<ThemePreviewApp>
   // RepaintBoundary key
   GlobalKey _globalKey = new GlobalKey();
 
-  final _tabsItem = [
+  final List<TabItem> _tabsItem = <TabItem>[
     TabItem('Controls', Icons.check_box),
     TabItem('Buttons', Icons.touch_app),
     TabItem('Inputs', Icons.keyboard),
     TabItem('Slider', Icons.tune),
     TabItem('Chips', Icons.dns),
+    TabItem('Toggle Button', Icons.toggle_on),
     TabItem('Others', Icons.people),
+    TabItem('Others 2', Icons.people_outline),
     TabItem('Text', Icons.text_fields),
     TabItem('Primary Text', Icons.text_fields),
     TabItem('Accent Text', Icons.text_fields),
@@ -99,22 +113,28 @@ class ThemePreviewAppState extends State<ThemePreviewApp>
   TabController tabBarController;
 
   bool showFAB = true;
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
-  get bottomItems => [
+  /*get bottomItems => [
         {'label': 'Map', 'icon': Icons.map},
         {'label': 'Description', 'icon': Icons.description},
         {'label': 'Transform', 'icon': Icons.transform},
       ]
           .map<Widget>((item) => IconButton(
-                    icon: Icon(item['icon']),
+                    icon: const Icon(item['icon']),
                     onPressed: () {},
                   )
               /*BottomNavigationBarItem(
-                icon: Icon(item['icon']),
+                icon: const Icon(item['icon']),
                 title: Text(item['label']),
               )*/
               )
-          .toList();
+          .toList();*/
 
   @override
   void initState() {
@@ -141,11 +161,16 @@ class ThemePreviewAppState extends State<ThemePreviewApp>
               title: Text("App Preview"),
               bottom: _buildTabBar(),
               actions: <Widget>[
-                IconButton(icon: Icon(Icons.add), onPressed: () {}),
                 IconButton(
-                    icon: Icon(Icons.add_a_photo), onPressed: _screenshot),
+                    icon: const Icon(
+                      Icons.add,
+                    ),
+                    onPressed: () {}),
+                IconButton(
+                    icon: const Icon(Icons.add_a_photo),
+                    onPressed: _screenshot),
                 /*IconButton(
-                      icon: Icon(Icons.create_new_folder),
+                      icon: const Icon(Icons.create_new_folder),
                       onPressed: () => Scaffold.of(context).openDrawer()),*/
               ],
             ),
@@ -166,29 +191,49 @@ class ThemePreviewAppState extends State<ThemePreviewApp>
                 ],
               ),
             ),
-            body: TabBarView(controller: tabBarController, children: [
+            body: TabBarView(controller: tabBarController, children: <Widget>[
               WidgetPreview1(theme: widget.theme),
               ButtonPreview(theme: widget.theme),
               InputsPreview(theme: widget.theme),
               SliderPreview(theme: widget.theme),
               ChipsPreview(theme: widget.theme),
+              ToggleButtonPreview(theme: widget.theme),
               OthersPreview(theme: widget.theme),
+              Others2Preview(theme: widget.theme),
               TypographyPreview(
-                textTheme: widget.theme.textTheme,
-                brightness: widget.theme.brightness,
+                theme: widget.theme,
+                typoPreviewMode: TypographyPreviewModes.classic,
               ),
               TypographyPreview(
-                textTheme: widget.theme.primaryTextTheme,
-                brightness: widget.theme.primaryColorBrightness,
+                theme: widget.theme,
+                typoPreviewMode: TypographyPreviewModes.primary,
               ),
               TypographyPreview(
-                textTheme: widget.theme.accentTextTheme,
-                brightness: widget.theme.accentColorBrightness,
+                theme: widget.theme,
+                typoPreviewMode: TypographyPreviewModes.accent,
               ),
             ]),
-            bottomNavigationBar: BottomAppBar(
+            /*bottomNavigationBar: BottomAppBar(
               child: Row(children: bottomItems),
               shape: CircularNotchedRectangle(),
+            ),*/
+            bottomNavigationBar: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.home),
+                  title: Text('Home'),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.business),
+                  title: Text('Business'),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.school),
+                  title: Text('School'),
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
             ),
           ),
         ),
@@ -199,8 +244,9 @@ class ThemePreviewAppState extends State<ThemePreviewApp>
   _buildTabBar() => TabBar(
       isScrollable: true,
       controller: tabBarController,
-      tabs:
-          _tabsItem.map((t) => Tab(text: t.text, icon: Icon(t.icon))).toList());
+      tabs: _tabsItem
+          .map((TabItem t) => Tab(text: t.text, icon: Icon(t.icon)))
+          .toList());
 
   Future<Uint8List> _screenshot() async {
     ByteData bytedata;
